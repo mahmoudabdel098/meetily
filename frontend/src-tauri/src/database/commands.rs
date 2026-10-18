@@ -1,3 +1,4 @@
+use crate::portable::PortablePathExt;
 use log::{error, info};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -87,7 +88,7 @@ pub async fn detect_legacy_database(selected_path: String) -> Result<Option<Stri
 pub async fn check_default_legacy_database(app: AppHandle) -> Result<Option<String>, String> {
     let app_data_dir = app
         .path()
-        .app_data_dir()
+        .portable_app_data_dir()
         .map_err(|e| format!("Failed to get app data dir: {}", e))?;
 
     let legacy_db = app_data_dir.join("meeting_minutes.db");
@@ -227,7 +228,7 @@ pub async fn initialize_fresh_database(app: AppHandle) -> Result<(), String> {
 pub async fn get_database_directory(app: AppHandle) -> Result<String, String> {
     let app_data_dir = app
         .path()
-        .app_data_dir()
+        .portable_app_data_dir()
         .map_err(|e| format!("Failed to get app data dir: {}", e))?;
 
     Ok(app_data_dir.to_string_lossy().to_string())
@@ -238,7 +239,7 @@ pub async fn get_database_directory(app: AppHandle) -> Result<String, String> {
 pub async fn open_database_folder(app: AppHandle) -> Result<(), String> {
     let app_data_dir = app
         .path()
-        .app_data_dir()
+        .portable_app_data_dir()
         .map_err(|e| format!("Failed to get app data dir: {}", e))?;
 
     // Ensure directory exists before trying to open it

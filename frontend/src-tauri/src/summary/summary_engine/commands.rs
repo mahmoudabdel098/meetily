@@ -1,6 +1,7 @@
 // Tauri commands for built-in AI model management
 // Exposes model download, status, and management functionality to frontend
 
+use crate::portable::PortablePathExt;
 use std::sync::Arc;
 
 use tauri::{AppHandle, Emitter, Manager, Runtime, State};
@@ -38,7 +39,24 @@ pub(crate) fn get_recommended_summary_model_for_current_system() -> Result<&'sta
         if is_macos { "macOS" } else { "other" }
     );
 
-    Ok(recommend_summary_model(is_macos, system_ram_gb))
+    let recommended = recommend_summary_model(is_macos, system_ram_gb);
+    Ok(bundled_portable_summary_model(recommended).unwrap_or(recommended))
+}
+
+/// A portable ZIP can ship with a summary model already in `data/models/summary`.
+/// Recommend that one (unless the RAM-based pick is also present) so the first
+/// run does not download a second multi-GB model.
+fn bundled_portable_summary_model(recommended: &'static str) -> Option<&'static str> {
+    let summary_dir = crate::portable::portable_root()?.join("models").join("summary");
+    let is_present = |name: &str| {
+        crate::summary::summary_engine::models::get_model_by_name(name)
+            .map(|model| summary_dir.join(model.gguf_file).is_file())
+            .unwrap_or(false)
+    };
+
+    std::iter::once(recommended)
+        .chain(["qwen3.5:2b", "qwen3.5:4b", "gemma3:4b", "gemma3:1b"])
+        .find(|name| is_present(*name))
 }
 
 // ============================================================================
@@ -50,7 +68,7 @@ pub struct ModelManagerState(pub Arc<Mutex<Option<Arc<ModelManager>>>>);
 
 /// Initialize the model manager
 pub async fn init_model_manager<R: Runtime>(app: &AppHandle<R>) -> anyhow::Result<()> {
-    let models_dir = app.path().app_data_dir()?.join("models").join("summary");
+    let models_dir = app.path().portable_app_data_dir()?.join("models").join("summary");
 
     let manager = ModelManager::new_with_models_dir(Some(models_dir))?;
     manager.init().await?;
@@ -360,7 +378,7 @@ pub async fn init_model_manager_at_startup<R: Runtime>(
 ) -> Result<(), String> {
     let models_dir = app
         .path()
-        .app_data_dir()
+        .portable_app_data_dir()
         .map_err(|e| format!("Failed to get app data dir: {}", e))?
         .join("models")
         .join("summary");

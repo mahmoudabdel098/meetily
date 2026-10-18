@@ -1,3 +1,4 @@
+use crate::portable::PortablePathExt;
 use sqlx::{migrate::MigrateDatabase, Result, Sqlite, SqlitePool, Transaction};
 use std::fs;
 use std::path::Path;
@@ -45,7 +46,7 @@ impl DatabaseManager {
         // Resolve the app's data directory
         let app_data_dir = app_handle
             .path()
-            .app_data_dir()
+            .portable_app_data_dir()
             .expect("failed to get app data dir");
         if !app_data_dir.exists() {
             fs::create_dir_all(&app_data_dir).map_err(|e| sqlx::Error::Io(e))?;
@@ -121,7 +122,7 @@ impl DatabaseManager {
     pub async fn is_first_launch(app_handle: &tauri::AppHandle) -> Result<bool> {
         let app_data_dir = app_handle
             .path()
-            .app_data_dir()
+            .portable_app_data_dir()
             .expect("failed to get app data dir");
 
         let tauri_db_path = app_data_dir.join("meeting_minutes.sqlite");
@@ -136,7 +137,7 @@ impl DatabaseManager {
     ) -> Result<Self> {
         let app_data_dir = app_handle
             .path()
-            .app_data_dir()
+            .portable_app_data_dir()
             .expect("failed to get app data dir");
 
         if !app_data_dir.exists() {

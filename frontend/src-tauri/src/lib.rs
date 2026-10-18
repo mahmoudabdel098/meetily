@@ -38,17 +38,20 @@ pub(crate) use perf_trace;
 pub mod analytics;
 pub mod api;
 pub mod audio;
+pub mod call_detection;
 pub mod config;
 pub mod console_utils;
 pub mod database;
 pub mod notifications;
 pub mod ollama;
+pub mod local_only;
 pub mod onboarding;
 pub mod openai;
 pub mod anthropic;
 pub mod groq;
 pub mod openrouter;
 pub mod parakeet_engine;
+pub mod portable;
 pub mod state;
 pub mod summary;
 pub mod tray;
@@ -447,6 +450,9 @@ pub fn get_language_preference_internal() -> Option<String> {
 pub fn run() {
     log::set_max_level(log::LevelFilter::Info);
 
+    // Must run before any webview is created
+    portable::init();
+
     let mut builder = tauri::Builder::default();
 
     #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
@@ -510,6 +516,9 @@ pub fn run() {
             if let Err(e) = tray::create_tray(_app.handle()) {
                 log::error!("Failed to create system tray: {}", e);
             }
+
+            // Watch for Teams/Zoom/Webex calls (Windows only)
+            call_detection::start(_app.handle().clone());
 
             // Initialize notification system with proper defaults
             log::info!("Initializing notification system...");
@@ -820,6 +829,10 @@ pub fn run() {
             // System settings commands
             #[cfg(target_os = "macos")]
             utils::open_system_settings,
+            portable::get_portable_data_dir,
+            local_only::is_local_only_build,
+            call_detection::start_detected_call_recording,
+            call_detection::is_call_detection_supported,
             // Retranscription commands
             audio::retranscription::start_retranscription_command,
             audio::retranscription::cancel_retranscription_command,

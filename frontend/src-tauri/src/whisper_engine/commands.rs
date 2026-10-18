@@ -1,3 +1,4 @@
+use crate::portable::PortablePathExt;
 use crate::whisper_engine::{is_download_cancelled, CancelDownloadOutcome, ModelInfo, WhisperEngine};
 use std::sync::{Arc, Mutex};
 use std::path::PathBuf;
@@ -13,7 +14,7 @@ static MODELS_DIR: Mutex<Option<PathBuf>> = Mutex::new(None);
 /// Initialize the models directory path using app_data_dir
 /// This should be called during app setup before whisper_init
 pub fn set_models_directory<R: Runtime>(app: &AppHandle<R>) {
-    let app_data_dir = app.path().app_data_dir()
+    let app_data_dir = app.path().portable_app_data_dir()
         .expect("Failed to get app data dir");
 
     let models_dir = app_data_dir.join("models");

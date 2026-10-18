@@ -1,3 +1,4 @@
+use crate::portable::PortablePathExt;
 use tauri::{
     Emitter,
     menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem},
@@ -63,7 +64,7 @@ fn toggle_recording_handler<R: Runtime>(app: &AppHandle<R>) {
             log::info!("Tray toggle: Stopping recording...");
 
             // Generate save path (same as RecordingControls.tsx)
-            let data_dir = match app_clone.path().app_data_dir() {
+            let data_dir = match app_clone.path().portable_app_data_dir() {
                 Ok(dir) => dir,
                 Err(e) => {
                     log::error!("Failed to get app data dir: {}", e);
@@ -102,16 +103,21 @@ fn toggle_recording_handler<R: Runtime>(app: &AppHandle<R>) {
                 }
             }
         } else {
-            // Immediately show starting state
-            set_tray_state(&app_clone, RecordingState::Starting);
-
             log::info!("Emitting start recording event from tray");
-            if let Some(window) = app_clone.get_webview_window("main") {
-                let _ = window.eval("sessionStorage.setItem('autoStartRecording', 'true')"); // Set the flag to start recording automatically
-                let _ = window.eval("window.location.assign('/')");
-            }
+            request_start_recording(&app_clone);
         }
     });
+}
+
+/// Asks the frontend to start a recording (home page auto-start flag).
+pub(crate) fn request_start_recording<R: Runtime>(app: &AppHandle<R>) {
+    // Immediately show starting state
+    set_tray_state(app, RecordingState::Starting);
+
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.eval("sessionStorage.setItem('autoStartRecording', 'true')"); // Set the flag to start recording automatically
+        let _ = window.eval("window.location.assign('/')");
+    }
 }
 
 fn pause_recording_handler<R: Runtime>(app: &AppHandle<R>) {
@@ -149,7 +155,7 @@ fn resume_recording_handler<R: Runtime>(app: &AppHandle<R>) {
     });
 }
 
-fn stop_recording_handler<R: Runtime>(app: &AppHandle<R>) {
+pub(crate) fn stop_recording_handler<R: Runtime>(app: &AppHandle<R>) {
     // Immediately show stopping state
     set_tray_state(app, RecordingState::Stopping);
 
@@ -159,7 +165,7 @@ fn stop_recording_handler<R: Runtime>(app: &AppHandle<R>) {
         log::info!("Tray: Stopping recording...");
 
         // Generate save path (same as RecordingControls.tsx)
-        let data_dir = match app_clone.path().app_data_dir() {
+        let data_dir = match app_clone.path().portable_app_data_dir() {
             Ok(dir) => dir,
             Err(e) => {
                 log::error!("Failed to get app data dir: {}", e);

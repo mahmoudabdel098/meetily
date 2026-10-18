@@ -91,6 +91,7 @@ pub async fn get_groq_models(api_key: Option<String>) -> Result<Vec<GroqModel>, 
     }
 
     // Fetch from API
+    crate::local_only::ensure_url_allowed("https://api.groq.com/openai/v1/models")?;
     log::info!("Fetching Groq models from API...");
     let client = reqwest::Client::new();
 

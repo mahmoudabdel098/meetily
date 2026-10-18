@@ -350,6 +350,9 @@ pub(crate) async fn generate_summary(
         }
     };
 
+    // Meeting content must never leave the PC in a local-only build
+    crate::local_only::ensure_url_allowed(&api_url)?;
+
     // Add authorization header for non-Claude providers
     if provider != &LLMProvider::Claude {
         headers.insert(

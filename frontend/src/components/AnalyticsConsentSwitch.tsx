@@ -7,6 +7,7 @@ import { load } from '@tauri-apps/plugin-store';
 import { invoke } from '@tauri-apps/api/core';
 import { Analytics } from '@/lib/analytics';
 import AnalyticsDataModal from './AnalyticsDataModal';
+import { isLocalOnlyBuild, storePath } from '@/lib/portable';
 
 const ANALYTICS_DEFAULT_OFF_MIGRATION_KEY = 'analyticsDefaultOffMigrationV1';
 
@@ -16,6 +17,11 @@ export default function AnalyticsConsentSwitch() {
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState<string>('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isLocalOnly, setIsLocalOnly] = useState(false);
+
+  useEffect(() => {
+    isLocalOnlyBuild().then(setIsLocalOnly);
+  }, []);
 
   // Note: Store loading is handled by AnalyticsProvider to avoid race conditions
 
@@ -75,7 +81,7 @@ export default function AnalyticsConsentSwitch() {
     setIsProcessing(true);
 
     try {
-      const store = await load('analytics.json', {
+      const store = await load(await storePath('analytics.json'), {
         autoSave: false,
         defaults: {
           analyticsOptedIn: false
@@ -152,6 +158,17 @@ export default function AnalyticsConsentSwitch() {
       console.error('Failed to open privacy policy link:', error);
     }
   };
+
+  if (isLocalOnly) {
+    return (
+      <div>
+        <h3 className="text-base font-semibold text-gray-800 mb-2">Usage Analytics</h3>
+        <p className="text-sm text-gray-600">
+          This is a local-only build: usage analytics are permanently disabled and no data leaves this PC.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -12,6 +12,7 @@ import {
   applyPinnedSummaryLanguageToMeeting,
   detectAndCacheSummaryLanguage,
 } from '@/lib/summary-language-preferences';
+import { storePath } from '@/lib/portable';
 
 type SummaryStatus = 'idle' | 'processing' | 'summarizing' | 'regenerating' | 'completed' | 'error';
 
@@ -379,7 +380,7 @@ export function useRecordingStop(
 
             // Check for activation (first meeting)
             const { Store } = await import('@tauri-apps/plugin-store');
-            const store = await Store.load('analytics.json');
+            const store = await Store.load(await storePath('analytics.json'));
             const totalMeetings = await store.get<number>('total_meetings');
 
             if (totalMeetings === 1) {

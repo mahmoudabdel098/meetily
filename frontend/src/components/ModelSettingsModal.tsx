@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/command';
 import { cn, isOllamaNotInstalledError } from '@/lib/utils';
 import { toast } from 'sonner';
+import { isLocalOnlyBuild } from '@/lib/portable';
 
 export interface ModelConfig {
   provider: 'ollama' | 'groq' | 'claude' | 'openai' | 'openrouter' | 'builtin-ai' | 'custom-openai';
@@ -157,6 +158,12 @@ export function ModelSettingsModal({
 
   // Combobox state
   const [modelComboboxOpen, setModelComboboxOpen] = useState<boolean>(false);
+
+  // Local-only builds hide cloud providers (the backend refuses them too)
+  const [isLocalOnly, setIsLocalOnly] = useState<boolean>(false);
+  useEffect(() => {
+    isLocalOnlyBuild().then(setIsLocalOnly);
+  }, []);
 
   // Dynamic model fetching state for OpenAI, Claude, and Groq
   const [openaiModels, setOpenaiModels] = useState<string[]>([]);
@@ -875,12 +882,12 @@ export function ModelSettingsModal({
               </SelectTrigger>
               <SelectContent className="max-h-64 overflow-y-auto">
                 <SelectItem value="builtin-ai">Built-in AI (Offline, No API needed)</SelectItem>
-                <SelectItem value="claude">Claude</SelectItem>
+                {!isLocalOnly && <SelectItem value="claude">Claude</SelectItem>}
                 <SelectItem value="custom-openai">Custom Server (OpenAI)</SelectItem>
-                <SelectItem value="groq">Groq</SelectItem>
+                {!isLocalOnly && <SelectItem value="groq">Groq</SelectItem>}
                 <SelectItem value="ollama">Ollama</SelectItem>
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="openrouter">OpenRouter</SelectItem>
+                {!isLocalOnly && <SelectItem value="openai">OpenAI</SelectItem>}
+                {!isLocalOnly && <SelectItem value="openrouter">OpenRouter</SelectItem>}
               </SelectContent>
             </Select>
 

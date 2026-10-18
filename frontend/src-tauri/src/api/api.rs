@@ -206,7 +206,7 @@ pub struct Profile {
 // Helper function to get auth token from store (optional)
 #[allow(dead_code)]
 async fn get_auth_token<R: Runtime>(app: &AppHandle<R>) -> Option<String> {
-    let store = match app.store("store.json") {
+    let store = match app.store(crate::portable::store_path("store.json")) {
         Ok(store) => store,
         Err(_) => return None,
     };
@@ -1290,6 +1290,7 @@ pub async fn api_test_custom_openai_connection<R: Runtime>(
 
     // Build the URL - append /chat/completions to the base endpoint
     let url = format!("{}/chat/completions", endpoint.trim_end_matches('/'));
+    crate::local_only::ensure_url_allowed(&url)?;
 
     // Create a minimal test request
     let test_request = serde_json::json!({

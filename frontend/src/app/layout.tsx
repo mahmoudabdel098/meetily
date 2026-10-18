@@ -24,6 +24,7 @@ import { UpdateCheckProvider } from '@/components/UpdateCheckProvider'
 import { RecordingPostProcessingProvider } from '@/contexts/RecordingPostProcessingProvider'
 import { ImportAudioDialog, ImportDropOverlay } from '@/components/ImportAudio'
 import { ImportDialogProvider } from '@/contexts/ImportDialogContext'
+import { CallDetectionListener } from '@/components/CallDetectionListener'
 import { isAudioExtension, getAudioFormatsDisplayList } from '@/constants/audioFormats'
 
 
@@ -246,6 +247,9 @@ export default function RootLayout({
                             <ImportDialogProvider onOpen={handleOpenImportDialog}>
                               {/* Download progress toast provider - listens for background downloads */}
                               <DownloadProgressToastProvider />
+
+                              {/* Automatic Teams/Zoom/Webex call detection (Windows) */}
+                              {!showOnboarding && <CallDetectionListener />}
 
                               {/* Show onboarding or main app */}
                               {showOnboarding ? (

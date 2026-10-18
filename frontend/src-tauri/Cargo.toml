@@ -48,6 +48,9 @@ cuda = ["whisper-rs/cuda"]         # Windows/Linux: NVIDIA CUDA GPU
 vulkan = ["whisper-rs/vulkan"]     # Windows/Linux: AMD/Intel Vulkan GPU
 hipblas = ["whisper-rs/hipblas"]   # Linux: AMD ROCm HIP
 
+# Never send meeting content or usage data off the machine (used by portable builds)
+local-only = []
+
 # CPU optimizations (fallback for systems without GPU)
 openblas = ["whisper-rs/openblas"] # Optimized BLAS (Auto-enabled on Windows/Linux)
 openmp = ["whisper-rs/openmp"]     # OpenMP parallel processing
@@ -185,6 +188,7 @@ whisper-rs = { version = "0.13.2", features = ["raw-api", "metal", "coreml"] }
 #   --features vulkan   (AMD/Intel GPUs)
 #   --features openblas (OpenBLAS optimization, requires BLAS_INCLUDE_DIRS)
 [target.'cfg(target_os = "windows")'.dependencies]
+winreg = "0.55"
 whisper-rs = { version = "0.13.2", features = ["raw-api"] }
 ort = { version = "2.0.0-rc.10", features = ["load-dynamic"] }
 futures-channel = "0.3.31"

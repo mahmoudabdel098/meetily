@@ -8,6 +8,7 @@
 import { check, Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { getVersion } from '@tauri-apps/api/app';
+import { isLocalOnlyBuild, isPortableMode } from '@/lib/portable';
 
 export interface UpdateInfo {
   available: boolean;
@@ -42,6 +43,16 @@ export class UpdateService {
     // Prevent concurrent update checks
     if (this.updateCheckInProgress) {
       throw new Error('Update check already in progress');
+    }
+
+    // Portable builds are updated by replacing the folder: the updater would
+    // download and run the installer instead. Local-only builds make no
+    // outbound calls at all.
+    if ((await isPortableMode()) || (await isLocalOnlyBuild())) {
+      return {
+        available: false,
+        currentVersion: await getVersion(),
+      };
     }
 
     // Skip if checked recently (unless forced)

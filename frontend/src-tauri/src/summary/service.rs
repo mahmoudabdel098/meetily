@@ -1,3 +1,4 @@
+use crate::portable::PortablePathExt;
 use crate::database::repositories::{
     meeting::MeetingsRepository, setting::SettingsRepository, summary::SummaryProcessesRepository,
 };
@@ -476,7 +477,7 @@ impl SummaryService {
         };
 
         // Get app data directory for BuiltInAI provider
-        let app_data_dir = _app.path().app_data_dir().ok();
+        let app_data_dir = _app.path().portable_app_data_dir().ok();
 
         if let Some(code) = &summary_language {
             info!("📝 Summary language preference: {}", code);

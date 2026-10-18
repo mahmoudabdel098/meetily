@@ -123,6 +123,7 @@ pub async fn get_openai_models(api_key: Option<String>) -> Result<Vec<OpenAIMode
     }
 
     // Fetch from API
+    crate::local_only::ensure_url_allowed("https://api.openai.com/v1/models")?;
     log::info!("Fetching OpenAI models from API...");
     let client = reqwest::Client::new();
 
