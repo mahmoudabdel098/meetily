@@ -92,7 +92,7 @@ export function ImportAudioDialog({
     loadingModels,
     fetchModels,
     resetSelection,
-  } = useTranscriptionModels(transcriptModelConfig);
+  } = useTranscriptionModels(transcriptModelConfig, { preferAccurateWhisper: true });
 
   const handleImportComplete = useCallback((result: ImportResult) => {
     toast.success(`Import complete! ${result.segments_count} segments created.`);

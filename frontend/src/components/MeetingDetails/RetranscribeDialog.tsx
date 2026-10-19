@@ -62,7 +62,9 @@ export function RetranscribeDialog({
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState<RetranscriptionProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLang, setSelectedLang] = useState(selectedLanguage || 'auto');
+  // Italian by default: Whisper is more accurate with a fixed language than with auto-detect
+  const defaultLang = !selectedLanguage || selectedLanguage === 'auto' ? 'it' : selectedLanguage;
+  const [selectedLang, setSelectedLang] = useState(defaultLang);
 
   // Use centralized model fetching hook
   const {
@@ -72,7 +74,7 @@ export function RetranscribeDialog({
     loadingModels,
     fetchModels,
     resetSelection,
-  } = useTranscriptionModels(transcriptModelConfig);
+  } = useTranscriptionModels(transcriptModelConfig, { preferAccurateWhisper: true });
 
   // Stable refs for callbacks to avoid listener re-registration
   const onCompleteRef = useRef(onComplete);
@@ -111,12 +113,12 @@ export function RetranscribeDialog({
       setIsProcessing(false);
       setProgress(null);
       setError(null);
-      setSelectedLang(selectedLanguage || 'auto');
+      setSelectedLang(defaultLang);
 
       // Fetch available models using centralized hook
       fetchModels();
     }
-  }, [open, selectedLanguage, transcriptModelConfig, fetchModels]);
+  }, [open, defaultLang, transcriptModelConfig, fetchModels]);
 
   // Listen for retranscription events
   useEffect(() => {

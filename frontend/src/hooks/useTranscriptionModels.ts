@@ -28,7 +28,15 @@ interface TranscriptModelConfig {
  * @param transcriptModelConfig - User's saved model configuration from context
  * @returns Object containing available models, selected model key, loading state, and fetch function
  */
-export function useTranscriptionModels(transcriptModelConfig: TranscriptModelConfig | undefined) {
+// Most accurate Whisper models first: used for whole recordings (retranscribe/import),
+// where accuracy matters more than live latency
+const ACCURATE_WHISPER_ORDER = ['large-v3-turbo', 'large-v3-turbo-q5_0', 'large-v3', 'large-v3-q5_0'];
+
+export function useTranscriptionModels(
+  transcriptModelConfig: TranscriptModelConfig | undefined,
+  options: { preferAccurateWhisper?: boolean } = {},
+) {
+  const { preferAccurateWhisper = false } = options;
   const [availableModels, setAvailableModels] = useState<ModelOption[]>([]);
   const [selectedModelKey, setSelectedModelKey] = useState<string>('');
   const [loadingModels, setLoadingModels] = useState(false);
@@ -91,9 +99,15 @@ export function useTranscriptionModels(transcriptModelConfig: TranscriptModelCon
         (configuredProvider === 'parakeet' && m.provider === 'parakeet' && m.name === configuredModel)
     );
 
+    const accurateWhisper = preferAccurateWhisper
+      ? ACCURATE_WHISPER_ORDER.map((name) => allModels.find((m) => m.provider === 'whisper' && m.name === name)).find(Boolean)
+      : undefined;
+
     // Only set default model if user hasn't manually selected one
     if (!userSelectedRef.current) {
-      if (configuredMatch) {
+      if (accurateWhisper) {
+        setSelectedModelKey(`${accurateWhisper.provider}:${accurateWhisper.name}`);
+      } else if (configuredMatch) {
         // Use the configured model if available
         setSelectedModelKey(`${configuredMatch.provider}:${configuredMatch.name}`);
       } else if (allModels.length > 0) {
@@ -103,7 +117,7 @@ export function useTranscriptionModels(transcriptModelConfig: TranscriptModelCon
     }
 
     setLoadingModels(false);
-  }, [transcriptModelConfig]);
+  }, [transcriptModelConfig, preferAccurateWhisper]);
 
   // Reset user selection tracking (call when dialog opens fresh)
   const resetSelection = useCallback(() => {

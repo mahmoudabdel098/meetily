@@ -139,6 +139,21 @@ di amministratore: l'avvio è registrato solo per il tuo utente e si vede anche 
 Gestione attività, nella scheda App di avvio. Se sposti la cartella, il percorso si
 aggiorna da solo al primo avvio. Per disattivarlo spegni lo stesso interruttore.
 
+### Trascrizione ad alta precisione
+
+Durante la call la trascrizione in tempo reale usa **Parakeet v3**: è veloce e precisa,
+e mostra il testo mentre si parla. A fine call, se vuoi la massima precisione (nomi,
+termini tecnici, frasi spezzate), apri la riunione e clicca **Migliora**:
+
+- il motore proposto è **Whisper large-v3-turbo**, il più accurato tra quelli inclusi;
+- la lingua è già impostata su **Italiano** (con la lingua fissata Whisper sbaglia meno
+  che con il rilevamento automatico);
+- l'etichetta di chi parla ("Tu", "Partecipante 1"…) viene conservata.
+
+Whisper rilegge tutta la registrazione, quindi richiede qualche minuto: su un portatile
+recente, circa un quarto della durata della riunione. Per usarlo, il salvataggio
+dell'audio deve essere attivo (lo è di default, in **Settings**, poi **Recordings**).
+
 ### Export in PDF, Word e Markdown
 
 Nella riunione, il pulsante **Esporta** crea un documento con titolo, data,
@@ -162,7 +177,7 @@ aggiornato quando il riassunto è pronto o quando rinomini i partecipanti.
 | `ffmpeg.exe` | Conversione e unione dell'audio |
 | `onnxruntime.dll` | Motore di trascrizione Parakeet |
 | `templates\` | Modelli di riassunto inclusi |
-| `data\models\` | Modelli inclusi: Parakeet v3 (trascrizione), Qwen 3.5 2B (riassunti), CAM++ (voci) |
+| `data\models\` | Modelli inclusi: Parakeet v3 e Whisper large-v3-turbo (trascrizione), Qwen 3.5 2B (riassunti), CAM++ (voci) |
 | `LICENSES.txt` e testi delle licenze | Note di licenza dei componenti open source (obbligatorie) |
 | `portable.txt` | Attiva la modalità portable |
 | `SHA256SUMS.txt` | Impronte dei file per la verifica |

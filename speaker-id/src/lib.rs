@@ -4,13 +4,15 @@
 //!   microphone (you) or from the call audio (other participants), from the
 //!   energy of the two capture streams;
 //! - [`fbank`]: Kaldi-compatible features for speaker-embedding models;
-//! - [`cluster`]: groups remote segments into distinct participants.
+//! - [`cluster`]: groups remote segments into distinct participants;
+//! - [`relabel`]: carries labels over when a recording is transcribed again.
 //!
 //! The ONNX embedding model itself runs in the app, which owns the runtime.
 
 pub mod attribution;
 pub mod cluster;
 pub mod fbank;
+pub mod relabel;
 
 pub use attribution::{EnergyTimeline, Source};
 pub use cluster::{ClusterConfig, OnlineClusterer};

@@ -3611,6 +3611,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "silero",
+ "speaker-id",
  "sqlx",
  "strsim 0.10.0",
  "symphonia",

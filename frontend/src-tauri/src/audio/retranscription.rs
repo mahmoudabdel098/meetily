@@ -420,7 +420,7 @@ async fn run_retranscription<R: Runtime>(
     emit_progress(&app, &meeting_id, "saving", 80, "Saving transcripts...");
 
     // Create transcript segments with proper timestamps from VAD
-    let segments = create_transcript_segments(&all_transcripts);
+    let mut segments = create_transcript_segments(&all_transcripts);
 
     // Save to database
     let app_state = app
@@ -434,6 +434,26 @@ async fn run_retranscription<R: Runtime>(
         .await
         .map_err(|e| anyhow!("Failed to start transaction: {}", e))?;
 
+    // Keep "who said what": the new segments inherit the speaker labels of the
+    // old transcript by time overlap (the new transcription has no speaker info)
+    let old_speakers: Vec<speaker_id::relabel::LabelledSpan> = sqlx::query_as::<_, (Option<f64>, Option<f64>, Option<String>)>(
+        "SELECT audio_start_time, audio_end_time, speaker FROM transcripts WHERE meeting_id = ? AND speaker IS NOT NULL"
+    )
+    .bind(&meeting_id)
+    .fetch_all(&mut *tx)
+    .await
+    .map_err(|e| anyhow!("Failed to read existing speaker labels: {}", e))?
+    .into_iter()
+    .filter_map(|(start, end, speaker)| {
+        Some(speaker_id::relabel::LabelledSpan { start: start?, end: end?, speaker: speaker? })
+    })
+    .collect();
+    for segment in segments.iter_mut() {
+        if let (Some(start), Some(end)) = (segment.audio_start_time, segment.audio_end_time) {
+            segment.speaker = speaker_id::relabel::speaker_for_span(&old_speakers, start, end);
+        }
+    }
+
     sqlx::query("DELETE FROM transcripts WHERE meeting_id = ?")
         .bind(&meeting_id)
         .execute(&mut *tx)
@@ -442,8 +462,8 @@ async fn run_retranscription<R: Runtime>(
 
     for segment in &segments {
         sqlx::query(
-            "INSERT INTO transcripts (id, meeting_id, transcript, timestamp, audio_start_time, audio_end_time, duration)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO transcripts (id, meeting_id, transcript, timestamp, audio_start_time, audio_end_time, duration, speaker)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         )
         .bind(&segment.id)
         .bind(&meeting_id)
@@ -452,6 +472,7 @@ async fn run_retranscription<R: Runtime>(
         .bind(segment.audio_start_time)
         .bind(segment.audio_end_time)
         .bind(segment.duration)
+        .bind(&segment.speaker)
         .execute(&mut *tx)
         .await
         .map_err(|e| anyhow!("Failed to insert transcript: {}", e))?;

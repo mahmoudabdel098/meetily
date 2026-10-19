@@ -57,6 +57,13 @@ International (CC-BY-4.0). Modello originale: "nvidia/parakeet-tdt-0.6b-v3"
 su Hugging Face; conversione ONNX: "istupakov/parakeet-tdt-0.6b-v3-onnx".
 
 
+4b. Modello di trascrizione ad alta precisione: data\models\ggml-large-v3-turbo-q5_0.bin
+-------------------------------------------------------------------------------------
+OpenAI Whisper large-v3-turbo, Copyright (c) 2022 OpenAI. Licenza MIT.
+Conversione in formato GGML (quantizzazione q5_0) dal progetto whisper.cpp
+(Georgi Gerganov), licenza MIT.
+
+
 5. Modello dei riassunti: data\models\summary\
 -----------------------------------------------
 Qwen 3.5 2B (quantizzazione GGUF Q4_K_M). Copyright Alibaba Cloud (Qwen team).
