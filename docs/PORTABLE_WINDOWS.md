@@ -18,8 +18,8 @@ compilazione: non si può disattivare dall'app né modificando file.
 | Link e pagine web | Nessuno: l'app non contiene link né può aprire il browser. |
 | Dati salvati | Solo nella cartella `data\` accanto all'exe, nient'altro nel profilo utente. |
 
-L'unico traffico di rete possibile è il download di un modello aggiuntivo, se lo
-richiedi tu dalle impostazioni. Scarica modelli pubblici e non invia nessun dato.
+La versione è **completamente offline**: anche il download di altri modelli è
+bloccato, sia nell'interfaccia sia nel motore. Si usano solo i modelli inclusi nello ZIP.
 
 Cosa resta sotto la tua responsabilità:
 
@@ -126,6 +126,14 @@ degli altri si mescolano di più: è possibile qualche errore. Se due etichette 
 stessa persona, o vuoi mettere i nomi veri, apri la riunione e clicca su
 **Partecipanti**: rinomina "Partecipante 1" in "Marco". Dando lo stesso nome a due
 partecipanti, vengono uniti.
+
+### Avvio con Windows
+
+In **Settings**, poi **General**, attiva **Avvia con Windows**: all'accesso Meetily parte
+ridotto nella barra delle applicazioni, pronto a rilevare le call. Non servono permessi
+di amministratore: l'avvio è registrato solo per il tuo utente e si vede anche in
+Gestione attività, nella scheda App di avvio. Se sposti la cartella, il percorso si
+aggiorna da solo al primo avvio. Per disattivarlo spegni lo stesso interruttore.
 
 ### Export in PDF, Word e Markdown
 

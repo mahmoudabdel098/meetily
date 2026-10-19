@@ -93,7 +93,7 @@ export function usePaginatedTranscripts({
         } catch (err) {
             if (!isCurrentRequest(requestId)) return null;
             console.error('Failed to load meeting metadata:', err);
-            setError('Failed to load meeting details');
+            setError('Impossibile caricare la riunione');
             return null;
         }
     }, [meetingId, isCurrentRequest]);
@@ -142,7 +142,7 @@ export function usePaginatedTranscripts({
         } catch (err) {
             if (!isCurrentRequest(requestId)) return [];
             console.error('Failed to load transcripts:', err);
-            setError('Failed to load transcripts');
+            setError('Impossibile caricare la trascrizione');
             return [];
         }
     }, [meetingId, isCurrentRequest]);

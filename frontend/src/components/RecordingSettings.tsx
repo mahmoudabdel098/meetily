@@ -121,13 +121,13 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       const store = await Store.load(await storePath('preferences.json'));
       await store.set('show_recording_notification', enabled);
       await store.save();
-      toast.success('Preference saved');
+      toast.success('Preferenza salvata');
       await Analytics.track('recording_notification_preference_changed', {
         enabled: enabled.toString()
       });
     } catch (error) {
       console.error('Failed to save notification preference:', error);
-      toast.error('Failed to save preference');
+      toast.error('Impossibile salvare la preferenza');
     }
   };
 
@@ -140,12 +140,12 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       // Show success toast with device details
       const micDevice = prefs.preferred_mic_device || 'Default';
       const systemDevice = prefs.preferred_system_device || 'Default';
-      toast.success("Device preferences saved", {
+      toast.success("Dispositivi salvati", {
         description: `Microphone: ${micDevice}, System Audio: ${systemDevice}`
       });
     } catch (error) {
       console.error('Failed to save recording preferences:', error);
-      toast.error("Failed to save device preferences", {
+      toast.error("Impossibile salvare i dispositivi", {
         description: error instanceof Error ? error.message : String(error)
       });
     } finally {
@@ -165,18 +165,18 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Recording Settings</h3>
+        <h3 className="text-lg font-semibold mb-4">Impostazioni di registrazione</h3>
         <p className="text-sm text-gray-600 mb-6">
-          Configure how your audio recordings are saved during meetings.
+          Come vengono salvate le registrazioni audio delle riunioni.
         </p>
       </div>
 
       {/* Auto Save Toggle */}
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div className="flex-1">
-          <div className="font-medium">Save Audio Recordings</div>
+          <div className="font-medium">Salva le registrazioni audio</div>
           <div className="text-sm text-gray-600">
-            Automatically save audio files when recording stops
+            Salva il file audio al termine della registrazione
           </div>
         </div>
         <Switch
@@ -190,22 +190,22 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       {preferences.auto_save && (
         <div className="space-y-4">
           <div className="p-4 border rounded-lg bg-gray-50">
-            <div className="font-medium mb-2">Save Location</div>
+            <div className="font-medium mb-2">Cartella</div>
             <div className="text-sm text-gray-600 mb-3 break-all">
-              {preferences.save_folder || 'Default folder'}
+              {preferences.save_folder || 'Cartella predefinita'}
             </div>
             <button
               onClick={handleOpenFolder}
               className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
             >
               <FolderOpen className="w-4 h-4" />
-              Open Folder
+              Apri cartella
             </button>
           </div>
 
           <div className="p-4 border rounded-lg bg-blue-50">
             <div className="text-sm text-blue-800">
-              <strong>File Format:</strong> {preferences.file_format.toUpperCase()} files
+              <strong>Formato:</strong> {preferences.file_format.toUpperCase()} files
             </div>
             <div className="text-xs text-blue-600 mt-1">
               Recordings are saved with timestamp: recording_YYYYMMDD_HHMMSS.{preferences.file_format}
@@ -218,7 +218,7 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       {!preferences.auto_save && (
         <div className="p-4 border rounded-lg bg-yellow-50">
           <div className="text-sm text-yellow-800">
-            Audio recording is disabled. Enable "Save Audio Recordings" to automatically save your meeting audio.
+            Il salvataggio dell'audio è disattivato. Attiva "Salva le registrazioni audio" per conservarlo.
           </div>
         </div>
       )}
@@ -226,9 +226,9 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       {/* Recording Notification Toggle */}
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <div className="flex-1">
-          <div className="font-medium">Recording Start Notification</div>
+          <div className="font-medium">Promemoria all'avvio</div>
           <div className="text-sm text-gray-600">
-            Show reminder to inform participants when recording starts
+            Ricorda di avvisare i partecipanti quando parte la registrazione
           </div>
         </div>
         <Switch
@@ -240,9 +240,9 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
       {/* Device Preferences */}
       <div className="space-y-4">
         <div className="border-t pt-6">
-          <h4 className="text-base font-medium text-gray-900 mb-4">Default Audio Devices</h4>
+          <h4 className="text-base font-medium text-gray-900 mb-4">Dispositivi audio predefiniti</h4>
           <p className="text-sm text-gray-600 mb-4">
-            Set your preferred microphone and system audio devices for recording. These will be automatically selected when starting new recordings.
+            Microfono e audio del computer usati per le nuove registrazioni.
           </p>
 
           {isRecording && (
@@ -251,7 +251,7 @@ export function RecordingSettings({ onSave }: RecordingSettingsProps) {
               aria-live="polite"
               className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md p-2 mb-4"
             >
-              Device selection is locked while a recording is in progress. Connecting a new device mid-recording will not switch to it. Stop the current meeting to change devices.
+              Durante una registrazione non puoi cambiare dispositivo: collegarne uno nuovo non lo attiva. Ferma la riunione per cambiarlo.
             </p>
           )}
 

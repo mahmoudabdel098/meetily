@@ -21,7 +21,7 @@ use speaker_id::{resample_to_16k, ClusterConfig, EnergyTimeline, OnlineClusterer
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::{AppHandle, Runtime};
+use tauri::{AppHandle, Manager, Runtime};
 
 use crate::portable::PortablePathExt;
 

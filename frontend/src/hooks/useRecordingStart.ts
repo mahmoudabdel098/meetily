@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 
 const TRANSCRIPTION_RUNTIME_START_ERROR_CODE = 'TRANSCRIPTION_RUNTIME_INITIALIZATION_FAILED';
-const TRANSCRIPTION_RUNTIME_USER_MESSAGE = 'Speech recognition could not initialize. Restart Meetily. If the problem continues, repair or reinstall the app.';
+const TRANSCRIPTION_RUNTIME_USER_MESSAGE = 'Il riconoscimento vocale non si è avviato. Riavvia Meetily; se il problema continua, estrai di nuovo lo ZIP.';
 
 const isTranscriptionRuntimeStartError = (error: unknown) =>
   String(error) === TRANSCRIPTION_RUNTIME_START_ERROR_CODE;
@@ -130,17 +130,17 @@ export function useRecordingStart(
       if (!modelReady) {
         const isDownloading = await checkIfModelDownloading();
         if (isDownloading) {
-          toast.info('Model download in progress', {
-            description: 'Please wait for the transcription model to finish downloading before recording.',
+          toast.info('Download del modello in corso', {
+            description: 'Attendi la fine del download del modello di trascrizione.',
             duration: 5000,
           });
           Analytics.trackButtonClick('start_recording_blocked_downloading', 'home_page');
         } else {
-          toast.error('Transcription model not ready', {
-            description: 'Please download a transcription model before recording.',
+          toast.error('Modello di trascrizione non pronto', {
+            description: 'Prima di registrare serve un modello di trascrizione.',
             duration: 5000,
           });
-          showModal?.('modelSelector', 'Transcription model setup required');
+          showModal?.('modelSelector', 'Configura il modello di trascrizione');
           Analytics.trackButtonClick('start_recording_blocked_missing', 'home_page');
         }
         setStatus(RecordingStatus.IDLE);
@@ -153,7 +153,7 @@ export function useRecordingStart(
       setMeetingTitle(randomTitle);
 
       // Set STARTING status before initiating backend recording
-      setStatus(RecordingStatus.STARTING, 'Initializing recording...');
+      setStatus(RecordingStatus.STARTING, 'Preparazione della registrazione...');
 
       // Start the actual backend recording
       console.log('Starting backend recording with meeting:', randomTitle);
@@ -191,7 +191,7 @@ export function useRecordingStart(
 
       const isRuntimeError = isTranscriptionRuntimeStartError(error);
       if (errorMsg.includes('Recording start timed out')) {
-        toast.error('Recording start timed out — please try again');
+        toast.error('La registrazione non è partita in tempo: riprova');
       }
 
       setStatus(RecordingStatus.ERROR, isRuntimeError
@@ -222,17 +222,17 @@ export function useRecordingStart(
           if (!modelReady) {
             const isDownloading = await checkIfModelDownloading();
             if (isDownloading) {
-              toast.info('Model download in progress', {
-                description: 'Please wait for the transcription model to finish downloading before recording.',
+              toast.info('Download del modello in corso', {
+                description: 'Attendi la fine del download del modello di trascrizione.',
                 duration: 5000,
               });
               Analytics.trackButtonClick('start_recording_blocked_downloading', 'sidebar_auto');
             } else {
-              toast.error('Transcription model not ready', {
-                description: 'Please download a transcription model before recording.',
+              toast.error('Modello di trascrizione non pronto', {
+                description: 'Prima di registrare serve un modello di trascrizione.',
                 duration: 5000,
               });
-              showModal?.('modelSelector', 'Transcription model setup required');
+              showModal?.('modelSelector', 'Configura il modello di trascrizione');
               Analytics.trackButtonClick('start_recording_blocked_missing', 'sidebar_auto');
             }
             setStatus(RecordingStatus.IDLE);
@@ -246,7 +246,7 @@ export function useRecordingStart(
             const generatedMeetingTitle = generateMeetingTitle();
 
             // Set STARTING status before initiating backend recording
-            setStatus(RecordingStatus.STARTING, 'Initializing recording...');
+            setStatus(RecordingStatus.STARTING, 'Preparazione della registrazione...');
 
             console.log('Auto-starting backend recording with meeting:', generatedMeetingTitle);
             const result = await recordingService.startRecordingWithDevices(
@@ -278,7 +278,7 @@ export function useRecordingStart(
                 ? TRANSCRIPTION_RUNTIME_USER_MESSAGE
                 : errorMsg);
               if (!isRuntimeError) {
-                alert(`Failed to start recording.\n\n${errorMsg}`);
+                alert(`Impossibile avviare la registrazione.\n\n${errorMsg}`);
               }
             }
             Analytics.trackButtonClick('start_recording_error', 'sidebar_auto');
@@ -321,17 +321,17 @@ export function useRecordingStart(
       if (!modelReady) {
         const isDownloading = await checkIfModelDownloading();
         if (isDownloading) {
-          toast.info('Model download in progress', {
-            description: 'Please wait for the transcription model to finish downloading before recording.',
+          toast.info('Download del modello in corso', {
+            description: 'Attendi la fine del download del modello di trascrizione.',
             duration: 5000,
           });
           Analytics.trackButtonClick('start_recording_blocked_downloading', 'sidebar_direct');
         } else {
-          toast.error('Transcription model not ready', {
-            description: 'Please download a transcription model before recording.',
+          toast.error('Modello di trascrizione non pronto', {
+            description: 'Prima di registrare serve un modello di trascrizione.',
             duration: 5000,
           });
-          showModal?.('modelSelector', 'Transcription model setup required');
+          showModal?.('modelSelector', 'Configura il modello di trascrizione');
           Analytics.trackButtonClick('start_recording_blocked_missing', 'sidebar_direct');
         }
         setStatus(RecordingStatus.IDLE);
@@ -344,7 +344,7 @@ export function useRecordingStart(
         const generatedMeetingTitle = generateMeetingTitle();
 
         // Set STARTING status before initiating backend recording
-        setStatus(RecordingStatus.STARTING, 'Initializing recording...');
+        setStatus(RecordingStatus.STARTING, 'Preparazione della registrazione...');
 
         console.log('Starting backend recording with meeting:', generatedMeetingTitle);
         const result = await recordingService.startRecordingWithDevices(
@@ -376,7 +376,7 @@ export function useRecordingStart(
             ? TRANSCRIPTION_RUNTIME_USER_MESSAGE
             : errorMsg);
           if (!isRuntimeError) {
-            alert(`Failed to start recording.\n\n${errorMsg}`);
+            alert(`Impossibile avviare la registrazione.\n\n${errorMsg}`);
           }
         }
         Analytics.trackButtonClick('start_recording_error', 'sidebar_direct');

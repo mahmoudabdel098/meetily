@@ -633,6 +633,7 @@ impl ParakeetEngine {
         model_name: &str,
         progress_callback: Option<Box<dyn Fn(DownloadProgress) + Send>>,
     ) -> Result<()> {
+        crate::local_only::ensure_downloads_allowed().map_err(|e| anyhow!(e))?;
         let model_info = self
             .available_models
             .read()

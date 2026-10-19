@@ -33,7 +33,7 @@ const START_TIMEOUT_MS = 120000;
 function withStartTimeout<T>(promise: Promise<T>): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(
-      () => reject(new Error('Recording start timed out after 120s')),
+      () => reject(new Error('La registrazione non è partita entro 120 secondi')),
       START_TIMEOUT_MS
     );
     promise.then(

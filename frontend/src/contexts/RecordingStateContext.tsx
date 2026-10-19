@@ -265,7 +265,7 @@ export function RecordingStateProvider({ children }: { children: React.ReactNode
           // selected mic that wasn't available at start (backend fell back to
           // the default). Copy is worded to be accurate for both.
           toast.info(
-            `Microphone switched to ${device_name} for this meeting.`,
+            `Microfono cambiato in ${device_name} per questa riunione.`,
             { duration: 6000 }
           );
         });
@@ -279,7 +279,7 @@ export function RecordingStateProvider({ children }: { children: React.ReactNode
           // available" — expected, not an error worth a toast.
           if (isRecordingRef.current) {
             toast.error(
-              `Microphone fallback failed for ${device_name}: ${error}`,
+              `Impossibile passare al microfono ${device_name}: ${error}`,
               { duration: 8000 }
             );
           }
@@ -292,7 +292,7 @@ export function RecordingStateProvider({ children }: { children: React.ReactNode
           // Fires at recording start, before isRecording flips true, so this
           // is intentionally NOT gated by isRecordingRef.
           toast.error(
-            'No microphone available — recording system audio only.',
+            'Nessun microfono disponibile: registro solo l\'audio del computer.',
             { duration: 8000 }
           );
         });
@@ -305,7 +305,7 @@ export function RecordingStateProvider({ children }: { children: React.ReactNode
           // mic-swap-failed so a stale event after Stop doesn't alarm the user.
           if (isRecordingRef.current) {
             toast.error(
-              `Microphone '${device_name}' could not be recovered — recording continues without a microphone. Stop and restart to fix.`,
+              `Il microfono '${device_name}' non è più disponibile: la registrazione continua senza microfono. Fermala e riavviala per risolvere.`,
               { duration: 10000 }
             );
           }

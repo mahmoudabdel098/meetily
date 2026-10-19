@@ -35,7 +35,7 @@ export const useAudioPlayer = (audioPath: string | null) => {
       return true;
     } catch (error) {
       console.error('Error initializing AudioContext:', error);
-      setError('Failed to initialize audio');
+      setError('Impossibile inizializzare l\'audio');
       return false;
     }
   };
@@ -103,7 +103,7 @@ export const useAudioPlayer = (audioPath: string | null) => {
           },
           error => {
             console.error('Audio decoding failed:', error);
-            reject(new Error('Failed to decode audio data: ' + error));
+            reject(new Error('Impossibile decodificare l\'audio: ' + error));
           }
         );
       });
@@ -122,7 +122,7 @@ export const useAudioPlayer = (audioPath: string | null) => {
           stack: error.stack,
         });
       }
-      setError('Failed to load audio file');
+      setError('Impossibile caricare il file audio');
     }
   };
 
@@ -159,16 +159,16 @@ export const useAudioPlayer = (audioPath: string | null) => {
       // Initialize context if needed
       const initialized = await initAudioContext();
       if (!initialized) {
-        throw new Error('Audio context initialization failed');
+        throw new Error('Impossibile inizializzare l\'audio');
       }
       if (!audioRef.current) {
-        throw new Error('Audio context is null after initialization');
+        throw new Error('Audio non inizializzato');
       }
       if (!audioBufferRef.current) {
-        throw new Error('No audio buffer loaded - try loading the audio file first');
+        throw new Error('Nessun audio caricato: carica prima il file');
       }
       if (audioRef.current.state !== 'running') {
-        throw new Error(`Audio context is in invalid state: ${audioRef.current.state}`);
+        throw new Error(`Stato audio non valido: ${audioRef.current.state}`);
       }
 
       // Stop any existing playback
@@ -232,7 +232,7 @@ export const useAudioPlayer = (audioPath: string | null) => {
       rafRef.current = requestAnimationFrame(updateTime);
     } catch (error) {
       console.error('Error during playback:', error);
-      setError('Failed to play audio');
+      setError('Impossibile riprodurre l\'audio');
       stopPlayback();
     }
   };

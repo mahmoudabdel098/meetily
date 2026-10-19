@@ -130,7 +130,7 @@ export async function saveMeetingSummaryLanguage(
 
   if (response.storage === 'local_fallback') {
     if (!writeLanguageFallback(SUMMARY_LANGUAGE_FALLBACK_PREFIX, meetingId, normalised)) {
-      throw new Error('Failed to save summary language on this device');
+      throw new Error('Impossibile salvare la lingua del riassunto su questo PC');
     }
     return {
       language: normalised,

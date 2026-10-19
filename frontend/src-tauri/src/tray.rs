@@ -319,7 +319,7 @@ fn build_menu<R: Runtime>(
     // If recording is not allowed (during onboarding, no transcription model), show disabled message
     if !can_record {
         builder = builder.item(
-            &MenuItemBuilder::new("⏳ Downloading transcription model...")
+            &MenuItemBuilder::new("⏳ Download del modello di trascrizione...")
                 .enabled(false)
                 .build(app)?,
         );
@@ -327,49 +327,49 @@ fn build_menu<R: Runtime>(
         match state {
             RecordingState::Stopped => {
                 builder = builder
-                    .item(&MenuItemBuilder::with_id("toggle_recording", "Start Recording").build(app)?);
+                    .item(&MenuItemBuilder::with_id("toggle_recording", "Avvia registrazione").build(app)?);
             }
             RecordingState::Starting => {
                 builder = builder.item(
-                    &MenuItemBuilder::new("🔄 Starting Recording...")
+                    &MenuItemBuilder::new("🔄 Avvio della registrazione...")
                         .enabled(false)
                         .build(app)?,
                 );
             }
             RecordingState::Recording => {
                 builder = builder
-                    .item(&MenuItemBuilder::with_id("pause_recording", "⏸ Pause Recording").build(app)?)
-                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Stop Recording").build(app)?);
+                    .item(&MenuItemBuilder::with_id("pause_recording", "⏸ Metti in pausa").build(app)?)
+                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Ferma registrazione").build(app)?);
             }
             RecordingState::Pausing => {
                 builder = builder
                     .item(
-                        &MenuItemBuilder::new("⏸ Pausing...")
+                        &MenuItemBuilder::new("⏸ Pausa in corso...")
                             .enabled(false)
                             .build(app)?,
                     )
-                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Stop Recording").build(app)?);
+                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Ferma registrazione").build(app)?);
             }
             RecordingState::Paused => {
                 builder = builder
                     .item(
-                        &MenuItemBuilder::with_id("resume_recording", "▶ Resume Recording")
+                        &MenuItemBuilder::with_id("resume_recording", "▶ Riprendi registrazione")
                             .build(app)?,
                     )
-                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Stop Recording").build(app)?);
+                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Ferma registrazione").build(app)?);
             }
             RecordingState::Resuming => {
                 builder = builder
                     .item(
-                        &MenuItemBuilder::new("▶ Resuming...")
+                        &MenuItemBuilder::new("▶ Ripresa in corso...")
                             .enabled(false)
                             .build(app)?,
                     )
-                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Stop Recording").build(app)?);
+                    .item(&MenuItemBuilder::with_id("stop_recording", "⏹ Ferma registrazione").build(app)?);
             }
             RecordingState::Stopping => {
                 builder = builder.item(
-                    &MenuItemBuilder::new("⏹ Stopping...")
+                    &MenuItemBuilder::new("⏹ Arresto in corso...")
                         .enabled(false)
                         .build(app)?,
                 );
@@ -379,10 +379,10 @@ fn build_menu<R: Runtime>(
 
     builder
         .item(&PredefinedMenuItem::separator(app)?)
-        .item(&MenuItemBuilder::with_id("open_window", "Open Main Window").build(app)?)
-        .item(&MenuItemBuilder::with_id("settings", "Settings").build(app)?)
+        .item(&MenuItemBuilder::with_id("open_window", "Apri Meetily").build(app)?)
+        .item(&MenuItemBuilder::with_id("settings", "Impostazioni").build(app)?)
         .item(&PredefinedMenuItem::separator(app)?)
-        .item(&MenuItemBuilder::with_id("quit", "Quit").build(app)?)
+        .item(&MenuItemBuilder::with_id("quit", "Esci").build(app)?)
         .build()
 }
 

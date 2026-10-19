@@ -38,6 +38,7 @@ pub(crate) use perf_trace;
 pub mod analytics;
 pub mod api;
 pub mod audio;
+pub mod autostart;
 pub mod call_detection;
 pub mod config;
 pub mod console_utils;
@@ -482,6 +483,17 @@ pub fn run() {
         .manage(audio::init_system_audio_state())
         .manage(summary::summary_engine::ModelManagerState(Arc::new(tokio::sync::Mutex::new(None))))
         .setup(|_app| {
+            // The window starts hidden: show it unless Windows launched us at login
+            if let Some(window) = _app.get_webview_window("main") {
+                if autostart::started_minimized() {
+                    log::info!("Started with Windows: staying in the tray");
+                } else {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+            autostart::refresh_path();
+
             #[cfg(target_os = "windows")]
             match _app.path().resolve(
                 "onnxruntime.dll",
@@ -837,6 +849,9 @@ pub fn run() {
             call_detection::start_detected_call_recording,
             call_detection::is_call_detection_supported,
             api::api_rename_speaker,
+            autostart::autostart_is_supported,
+            autostart::autostart_get,
+            autostart::autostart_set,
             exports::save_export_file,
             exports::select_folder,
             exports::write_export_to_folder,

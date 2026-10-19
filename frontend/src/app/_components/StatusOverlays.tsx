@@ -47,14 +47,14 @@ export function StatusOverlays({
       {/* Processing status overlay - shown after recording stops while finalizing transcription */}
       <StatusOverlay
         show={isProcessing}
-        message="Finalizing transcription..."
+        message="Completamento della trascrizione..."
         sidebarCollapsed={sidebarCollapsed}
       />
 
       {/* Saving status overlay - shown while saving transcript to database */}
       <StatusOverlay
         show={isSaving}
-        message="Saving transcript..."
+        message="Salvataggio della trascrizione..."
         sidebarCollapsed={sidebarCollapsed}
       />
     </>

@@ -353,6 +353,7 @@ impl ModelManager {
         model_name: &str,
         progress_callback: Option<Box<dyn Fn(DownloadProgress) + Send>>,
     ) -> Result<()> {
+        crate::local_only::ensure_downloads_allowed().map_err(|e| anyhow!(e))?;
         log::info!("Starting download for model: {}", model_name);
 
         // Check if already downloading

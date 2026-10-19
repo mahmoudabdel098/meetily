@@ -53,10 +53,10 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
   const currentSummary = useMemo(() => {
     if (!summary) {
       return {
-        Agenda: { title: "Agenda", blocks: [] },
-        Decisions: { title: "Decisions", blocks: [] },
+        Agenda: { title: "Ordine del giorno", blocks: [] },
+        Decisions: { title: "Decisioni", blocks: [] },
         ActionItems: { title: "Action Items", blocks: [] },
-        ClosingRemarks: { title: "Closing Remarks", blocks: [] }
+        ClosingRemarks: { title: "Conclusioni", blocks: [] }
       };
     }
     return ensureUniqueBlockIds(summary);
@@ -541,7 +541,7 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
     const newSummary: Summary = {
       ...currentSummary,
       [newSectionKey]: {
-        title: 'New Section',
+        title: 'Nuova sezione',
         blocks: [{
           id: newBlockId,
           type: 'text' as const,
@@ -558,12 +558,12 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
   };
 
   const convertToMarkdown = () => {
-    let markdown = `# AI Generated Summary of Meeting: ${meeting?.id || 'Unknown'} - ${meeting?.title || 'Untitled Meeting'}\n\n`;
-    markdown += `## Date: ${meeting?.created_at ? new Date(meeting.created_at).toLocaleDateString() : new Date().toLocaleDateString()}\n\n`;
+    let markdown = `# Riassunto della riunione: ${meeting?.title || 'Riunione senza titolo'}\n\n`;
+    markdown += `## Data: ${meeting?.created_at ? new Date(meeting.created_at).toLocaleDateString('it-IT') : new Date().toLocaleDateString('it-IT')}\n\n`;
     
     Object.entries(currentSummary).forEach(([key, section]) => {
       if (key === 'title') {
-        markdown = `# ${section.title || 'AI Enhanced Summary'}\n\n`;
+        markdown = `# ${section.title || 'Riassunto AI'}\n\n`;
       } else {
         markdown += `## ${section.title || key}\n\n`;
         section.blocks.forEach(block => {
@@ -609,10 +609,10 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
     <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg">
       <div className="flex items-center mb-2">
         <ExclamationTriangleIcon className="h-5 w-5 text-red-500 mr-2" />
-        <h3 className="text-red-700 font-medium">Error Generating Summary</h3>
+        <h3 className="text-red-700 font-medium">Errore nel riassunto</h3>
       </div>
       <p className="text-red-600 text-sm">{error}</p>
-      <p className="text-red-500 text-xs mt-2">Please check your model configuration and API keys, or try again.</p>
+      <p className="text-red-500 text-xs mt-2">Controlla il modello scelto e riprova.</p>
     </div>
   );
 
@@ -626,8 +626,8 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
           </h3>
           <p className="text-blue-600 text-sm">
             {status === 'processing' 
-              ? 'Analyzing your transcript...' 
-              : 'Creating a detailed summary of your meeting...'}
+              ? 'Analisi della trascrizione...' 
+              : 'Creazione del riassunto della riunione...'}
           </p>
         </div>
       </div>
@@ -649,8 +649,8 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
   if (!hasContent && status === 'completed') {
     return (
       <div className="w-full p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
-        <p className="text-gray-600">No summary content available.</p>
-        <p className="text-gray-500 text-sm mt-1">Try generating a new summary.</p>
+        <p className="text-gray-600">Nessun contenuto nel riassunto.</p>
+        <p className="text-gray-500 text-sm mt-1">Prova a generare un nuovo riassunto.</p>
       </div>
     );
   }
@@ -701,7 +701,7 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
         <div className="flex items-center space-x-2">
           <span className="text-2xl">✨</span>
           <h2 className="text-2xl font-semibold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-            AI Enhanced Summary
+            Riassunto AI
           </h2>
         </div>
         <div className="flex items-center space-x-2">
@@ -709,7 +709,7 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
             onClick={handleUndo}
             disabled={currentHistoryIndex === 0}
             className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
-            title="Undo"
+            title="Annulla"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -730,7 +730,7 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
             onClick={handleRedo}
             disabled={currentHistoryIndex === history.length - 1}
             className="p-2 hover:bg-gray-100 rounded disabled:opacity-50"
-            title="Redo"
+            title="Ripeti"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -750,7 +750,7 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
           <button
             onClick={handleAddSection}
             className="p-2 hover:bg-gray-100 rounded"
-            title="Add new section"
+            title="Aggiungi sezione"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -775,17 +775,17 @@ export const AISummary = ({ summary, status, error, onSummaryChange, onRegenerat
             className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md flex items-center space-x-1"
           >
             <span>📋</span>
-            <span>Copy</span>
+            <span>Copia</span>
           </button>
           <button
             onClick={onRegenerateSummary}
             className="px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md flex items-center space-x-1"
-            title="Regenerate Summary"
+            title="Rigenera riassunto"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span className="ml-1">Regenerate</span>
+            <span className="ml-1">Rigenera</span>
           </button>
         </div>
       </div> */}

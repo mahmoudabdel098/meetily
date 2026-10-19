@@ -30,12 +30,12 @@ export function SetupOverviewStep() {
     {
       number: 1,
       type: 'transcription',
-      title: 'Download Transcription Engine',
+      title: 'Motore di trascrizione',
     },
     {
       number: 2,
       type: 'summarization',
-      title: 'Download Summarization Engine',
+      title: 'Motore dei riassunti',
     },
   ];
 
@@ -45,8 +45,8 @@ export function SetupOverviewStep() {
 
   return (
     <OnboardingContainer
-      title="Setup Overview"
-      description="Meetily requires that you download the Transcription & Summarization AI models for the software to work."
+      title="Configurazione"
+      description="Meetily usa due modelli AI che funzionano sul PC: uno per la trascrizione e uno per i riassunti."
       step={2}
       totalSteps={isMac ? 4 : 3}
     >
@@ -73,8 +73,7 @@ export function SetupOverviewStep() {
                                 </button>
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-xs text-sm">
-                                You can also select external AI providers like OpenAI, Claude, or
-                                Ollama for summary generation in settings.
+                                Entrambi i modelli funzionano sul PC, senza inviare dati all'esterno.
                                 </TooltipContent>
                             </Tooltip>
                             </TooltipProvider>
@@ -94,7 +93,7 @@ export function SetupOverviewStep() {
             onClick={handleContinue}
             className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white"
           >
-            Let's Go
+            Iniziamo
           </Button>
         </div>
       </div>

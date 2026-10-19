@@ -92,10 +92,10 @@ export function SummaryGeneratorButtonGroup({
             Analytics.trackButtonClick('stop_summary_generation', 'meeting_details');
             onStopGeneration();
           }}
-          title="Stop summary generation"
+          title="Ferma il riassunto"
         >
           <Square size={18} fill="currentColor" />
-          <span className="hidden @[24rem]:inline">Stop</span>
+          <span className="hidden @[24rem]:inline">Ferma</span>
         </Button>
       ) : (
         <Button
@@ -109,19 +109,19 @@ export function SummaryGeneratorButtonGroup({
           disabled={isModelConfigLoading}
           title={
             isModelConfigLoading
-              ? 'Loading model configuration...'
-              : hasSummary ? 'Regenerate AI Summary' : 'Generate AI Summary'
+              ? 'Caricamento del modello...'
+              : hasSummary ? 'Rigenera riassunto AI' : 'Genera riassunto AI'
           }
         >
           {isModelConfigLoading ? (
             <>
               <Loader2 className="animate-spin" size={18} />
-              <span className="hidden @[24rem]:inline">Processing...</span>
+              <span className="hidden @[24rem]:inline">Elaborazione...</span>
             </>
           ) : (
             <>
               <Sparkles size={18} />
-              <span className="hidden @[24rem]:inline">{hasSummary ? 'Regenerate Summary' : 'Generate Summary'}</span>
+              <span className="hidden @[24rem]:inline">{hasSummary ? 'Rigenera riassunto' : 'Genera riassunto'}</span>
             </>
           )}
         </Button>
@@ -135,17 +135,17 @@ export function SummaryGeneratorButtonGroup({
           <Button
             variant="outline"
             size="sm"
-            title="Summary Settings"
+            title="Impostazioni del riassunto"
           >
             <Settings />
-            <span className="hidden @[40rem]:inline">AI Model</span>
+            <span className="hidden @[40rem]:inline">Modello AI</span>
           </Button>
         </DialogTrigger>
         <DialogContent
           aria-describedby={undefined}
         >
           <VisuallyHidden>
-            <DialogTitle>Model Settings</DialogTitle>
+            <DialogTitle>Impostazioni del modello</DialogTitle>
           </VisuallyHidden>
           <ModelSettingsModal
             onSave={async (config) => {
@@ -167,10 +167,10 @@ export function SummaryGeneratorButtonGroup({
             <Button
               variant="outline"
               size="sm"
-              title="Select summary template"
+              title="Scegli il modello di riassunto"
             >
               <FileText />
-              <span className="hidden @[40rem]:inline">Template</span>
+              <span className="hidden @[40rem]:inline">Modello</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

@@ -148,7 +148,7 @@ export function useRecordingStop(
       console.log('Recording already stopped by RecordingControls, processing transcription...');
 
       // Wait for transcription to complete
-      setStatus(RecordingStatus.PROCESSING_TRANSCRIPTS, 'Waiting for transcription...');
+      setStatus(RecordingStatus.PROCESSING_TRANSCRIPTS, 'In attesa della trascrizione...');
       console.log('Waiting for transcription to complete...');
 
       const MAX_WAIT_TIME = 60000; // 60 seconds maximum wait (increased for longer processing)
@@ -217,7 +217,7 @@ export function useRecordingStop(
         time_since_stop: flushStartTime - stopStartTime,
         current_transcript_count: transcriptsRef.current.length
       });
-      setStatus(RecordingStatus.PROCESSING_TRANSCRIPTS, 'Flushing transcript buffer...');
+      setStatus(RecordingStatus.PROCESSING_TRANSCRIPTS, 'Completamento della trascrizione...');
       flushBuffer();
       const flushEndTime = Date.now();
       console.log('✅ Final buffer flush completed', {
@@ -237,7 +237,7 @@ export function useRecordingStop(
       // This ensures user sees all transcripts streaming in before database save
       if (isCallApi && transcriptionComplete == true) {
 
-        setStatus(RecordingStatus.SAVING, 'Saving meeting to database...');
+        setStatus(RecordingStatus.SAVING, 'Salvataggio della riunione...');
 
         // Get fresh transcript state (ALL transcripts including late ones)
         const freshTranscripts = [...transcriptsRef.current];
@@ -256,7 +256,7 @@ export function useRecordingStop(
 
         try {
           const responseData = await storageService.saveMeeting(
-            savedMeetingName || meetingTitle || 'New Meeting',  // PREFER savedMeetingName (backend source)
+            savedMeetingName || meetingTitle || 'Nuova riunione',  // PREFER savedMeetingName (backend source)
             freshTranscripts,
             folderPath
           );
@@ -264,7 +264,7 @@ export function useRecordingStop(
           const meetingId = responseData.meeting_id;
           if (!meetingId) {
             console.error('No meeting_id in response:', responseData);
-            throw new Error('No meeting ID received from save operation');
+            throw new Error('Salvataggio non riuscito: ID della riunione mancante');
           }
 
           let shouldDetectSummaryLanguage = false;
@@ -272,8 +272,8 @@ export function useRecordingStop(
             shouldDetectSummaryLanguage = !(await applyPinnedSummaryLanguageToMeeting(meetingId));
           } catch (error) {
             console.warn('Failed to apply pinned summary language preference for new meeting:', error);
-            toast.warning('Could not apply default summary language', {
-              description: 'The meeting was saved, but the default summary language was not applied.',
+            toast.warning('Impossibile applicare la lingua predefinita del riassunto', {
+              description: 'La riunione è stata salvata, ma senza la lingua predefinita del riassunto.',
             });
           }
 
@@ -285,8 +285,8 @@ export function useRecordingStop(
               );
             } catch (error) {
               console.warn('Failed to detect summary language for new meeting:', error);
-              toast.warning('Could not detect summary language', {
-                description: 'The meeting was saved, but Auto could not detect the summary language.',
+              toast.warning('Impossibile rilevare la lingua del riassunto', {
+                description: 'La riunione è stata salvata, ma la lingua del riassunto non è stata rilevata.',
               });
             }
           }
@@ -328,10 +328,10 @@ export function useRecordingStop(
           setStatus(RecordingStatus.COMPLETED);
 
           // Show success toast with navigation option
-          toast.success('Recording saved successfully!', {
+          toast.success('Registrazione salvata!', {
             description: `${freshTranscripts.length} transcript segments saved.`,
             action: {
-              label: 'View Meeting',
+              label: 'Apri riunione',
               onClick: () => {
                 router.push(`/meeting-details?id=${meetingId}`);
                 Analytics.trackButtonClick('view_meeting_from_toast', 'recording_complete');
@@ -402,9 +402,9 @@ export function useRecordingStop(
 
         } catch (saveError) {
           console.error('Failed to save meeting to database:', saveError);
-          setStatus(RecordingStatus.ERROR, saveError instanceof Error ? saveError.message : 'Unknown error');
-          toast.error('Failed to save meeting', {
-            description: saveError instanceof Error ? saveError.message : 'Unknown error'
+          setStatus(RecordingStatus.ERROR, saveError instanceof Error ? saveError.message : 'Errore sconosciuto');
+          toast.error('Impossibile salvare la riunione', {
+            description: saveError instanceof Error ? saveError.message : 'Errore sconosciuto'
           });
           throw saveError;
         }
@@ -418,7 +418,7 @@ export function useRecordingStop(
       setIsRecordingDisabled(false);
     } catch (error) {
       console.error('Error in handleRecordingStop:', error);
-      setStatus(RecordingStatus.ERROR, error instanceof Error ? error.message : 'Unknown error');
+      setStatus(RecordingStatus.ERROR, error instanceof Error ? error.message : 'Errore sconosciuto');
       // isRecording already set to false at function start
       setIsRecordingDisabled(false);
     } finally {

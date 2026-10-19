@@ -52,10 +52,10 @@ export function TranscriptButtonGroup({
             onCopyTranscript();
           }}
           disabled={transcriptCount === 0}
-          title={transcriptCount === 0 ? 'No transcript available' : 'Copy Transcript'}
+          title={transcriptCount === 0 ? 'Nessuna trascrizione' : 'Copy Transcript'}
         >
           <Copy />
-          <span className="hidden @[22rem]:inline">Copy</span>
+          <span className="hidden @[22rem]:inline">Copia</span>
         </Button>
 
         <Button
@@ -66,10 +66,10 @@ export function TranscriptButtonGroup({
             Analytics.trackButtonClick('open_recording_folder', 'meeting_details');
             onOpenMeetingFolder();
           }}
-          title="Open Recording Folder"
+          title="Apri la cartella della registrazione"
         >
           <FolderOpen className="@[22rem]:mr-2" size={18} />
-          <span className="hidden @[22rem]:inline">Recording</span>
+          <span className="hidden @[22rem]:inline">Registrazione</span>
         </Button>
 
         {meetingId && (
@@ -97,10 +97,10 @@ export function TranscriptButtonGroup({
               Analytics.trackButtonClick('enhance_transcript', 'meeting_details');
               setShowRetranscribeDialog(true);
             }}
-            title="Retranscribe to enhance your recorded audio"
+            title="Trascrivi di nuovo l'audio registrato"
           >
             <RefreshCw className="@[22rem]:mr-2" size={18} />
-            <span className="hidden @[22rem]:inline">Enhance</span>
+            <span className="hidden @[22rem]:inline">Migliora</span>
           </Button>
         )}
       </ButtonGroup>

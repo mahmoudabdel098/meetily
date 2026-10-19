@@ -107,7 +107,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('Error fetching meetings:', error);
         setMeetings([]);
-        Analytics.trackBackendConnection(false, error instanceof Error ? error.message : 'Unknown error');
+        Analytics.trackBackendConnection(false, error instanceof Error ? error.message : 'Errore sconosciuto');
       }
     }
   }, [serverAddress]);
@@ -127,7 +127,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const baseItems: SidebarItem[] = [
     {
       id: 'meetings',
-      title: 'Meeting Notes',
+      title: 'Riunioni',
       type: 'folder' as const,
       children: [
         ...meetings.map(meeting => ({ id: meeting.id, title: meeting.title, type: 'file' as const }))
@@ -229,7 +229,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
             start: processId,
             end: null,
             data: null,
-            error: 'Summary generation timed out after 15 minutes. Please try again or check your model configuration.',
+            error: 'Il riassunto non è arrivato entro 15 minuti. Riprova o controlla il modello.',
           });
           if (summaryPollsRef.current.get(meetingId) === entry) {
             stopSummaryPolling(meetingId, processId);
@@ -266,7 +266,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
             start: processId,
             end: null,
             data: null,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : 'Errore sconosciuto',
           });
         } catch (callbackError) {
           console.error('Failed to handle summary polling error:', callbackError);

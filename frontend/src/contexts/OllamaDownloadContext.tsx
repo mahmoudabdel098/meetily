@@ -79,7 +79,7 @@ export function OllamaDownloadProvider({ children }: { children: React.ReactNode
             console.log(`✅ [OllamaDownloadContext] Download complete for ${modelName}`);
 
             toast.success(`Model ${modelName} downloaded!`, {
-              description: 'Model is now ready to use',
+              description: 'Il modello è pronto',
               duration: 4000
             });
 
@@ -106,7 +106,7 @@ export function OllamaDownloadProvider({ children }: { children: React.ReactNode
             const { modelName, error } = event.payload;
             console.error(`❌ [OllamaDownloadContext] Download error for ${modelName}:`, error);
 
-            toast.error(`Download failed: ${modelName}`, {
+            toast.error(`Download non riuscito: ${modelName}`, {
               description: error,
               duration: 6000
             });

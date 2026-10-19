@@ -11,7 +11,7 @@ interface TranscriptViewProps {
   transcripts: Transcript[];
   isRecording?: boolean;
   isPaused?: boolean; // Is recording paused (affects UI indicators)
-  isProcessing?: boolean; // Is processing/finalizing transcription (hides "Listening..." indicator)
+  isProcessing?: boolean; // Is processing/finalizing transcription (hides "In ascolto..." indicator)
   isStopping?: boolean; // Is recording being stopped (provides immediate UI feedback)
   enableStreaming?: boolean; // Enable streaming effect for live transcription UX
 }
@@ -343,7 +343,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ transcripts, isR
           className="flex items-center gap-2 mt-4 text-gray-500"
         >
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <span className="text-sm">Listening...</span>
+          <span className="text-sm">In ascolto...</span>
         </motion.div>
       )}
 
@@ -360,18 +360,18 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ transcripts, isR
                 <div className={`w-3 h-3 rounded-full ${isPaused ? 'bg-orange-500' : 'bg-blue-500 animate-pulse'}`}></div>
               </div>
               <p className="text-sm text-gray-600">
-                {isPaused ? 'Recording paused' : 'Listening for speech...'}
+                {isPaused ? 'Registrazione in pausa' : 'In attesa di parlato...'}
               </p>
               <p className="text-xs mt-1 text-gray-400">
                 {isPaused
-                  ? 'Click resume to continue recording'
-                  : 'Speak to see live transcription'}
+                  ? 'Clicca Riprendi per continuare'
+                  : 'Parla per vedere la trascrizione in tempo reale'}
               </p>
             </>
           ) : (
             <>
-              <p className="text-lg font-semibold">Welcome to meetily!</p>
-              <p className="text-xs mt-1">Start recording to see live transcription</p>
+              <p className="text-lg font-semibold">Benvenuto in Meetily!</p>
+              <p className="text-xs mt-1">Avvia la registrazione per vedere la trascrizione in tempo reale</p>
             </>
           )}
         </motion.div>

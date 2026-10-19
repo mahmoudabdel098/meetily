@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocalOnly, OFFLINE_MODELS_NOTE } from '@/hooks/useLocalOnly';
+
+// Display names for the model speed/accuracy values (kept in English in code)
+const ACCURACY_IT: Record<string, string> = { High: 'alta', Good: 'buona', Decent: 'discreta' };
+const SPEED_IT: Record<string, string> = { Slow: 'lenta', Medium: 'media', Fast: 'veloce', 'Very Fast': 'molto veloce' };
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -29,6 +34,7 @@ export function ModelManager({
   autoSave = false
 }: ModelManagerProps) {
   const [models, setModels] = useState<ModelInfo[]>([]);
+  const isOffline = useLocalOnly();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
@@ -173,9 +179,9 @@ export function ModelManager({
         setInitialized(true);
       } catch (err) {
         console.error('Failed to initialize Whisper:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load models');
-        toast.error('Failed to load transcription models', {
-          description: err instanceof Error ? err.message : 'Unknown error',
+        setError(err instanceof Error ? err.message : 'Impossibile caricare i modelli');
+        toast.error('Impossibile caricare i modelli di trascrizione', {
+          description: err instanceof Error ? err.message : 'Errore sconosciuto',
           duration: 5000
         });
       } finally {
@@ -250,8 +256,8 @@ export function ModelManager({
           // Clean up throttle data
           progressThrottleRef.current.delete(modelName);
 
-          toast.success(`${getModelIcon(model?.accuracy || 'Good')} ${displayName} ready!`, {
-            description: 'Model downloaded and ready to use',
+          toast.success(`${getModelIcon(model?.accuracy || 'Good')} ${displayName} pronto!`, {
+            description: 'Modello scaricato e pronto',
             duration: 4000
           });
 
@@ -295,7 +301,7 @@ export function ModelManager({
             description: error,
             duration: 6000,
             action: {
-              label: 'Retry',
+              label: 'Riprova',
               onClick: () => downloadModel(modelName)
             }
           });
@@ -338,7 +344,7 @@ export function ModelManager({
       if (outcome === 'pending') {
         reconcileCancellation(modelName);
         toast.info(`Cancelling ${displayName}...`, {
-          description: 'The download is still shutting down. Retry will be available when cleanup completes.',
+          description: 'Il download si sta ancora chiudendo. Potrai riprovare tra poco.',
           duration: 4000
         });
         return;
@@ -349,8 +355,8 @@ export function ModelManager({
       reconcileCancellation(modelName);
     } catch (err) {
       console.error('Failed to cancel download:', err);
-      toast.error('Failed to cancel download', {
-        description: err instanceof Error ? err.message : 'Unknown error',
+      toast.error('Impossibile annullare il download', {
+        description: err instanceof Error ? err.message : 'Errore sconosciuto',
         duration: 4000
       });
     }
@@ -375,7 +381,7 @@ export function ModelManager({
       );
 
       toast.info(`Downloading ${displayName}...`, {
-        description: 'This may take a few minutes',
+        description: 'Potrebbe richiedere qualche minuto',
         duration: 5000
       });
 
@@ -388,7 +394,7 @@ export function ModelManager({
         return newSet;
       });
 
-      const errorMessage = err instanceof Error ? err.message : 'Download failed';
+      const errorMessage = err instanceof Error ? err.message : 'Download non riuscito';
       setModels(prev =>
         prev.map(model =>
           model.name === modelName ? { ...model, status: { Error: errorMessage } } : model
@@ -425,7 +431,7 @@ export function ModelManager({
       setModels(modelList);
 
       toast.success(`${displayName} deleted`, {
-        description: 'Model removed to free up space',
+        description: 'Modello eliminato',
         duration: 3000
       });
 
@@ -436,7 +442,7 @@ export function ModelManager({
     } catch (err) {
       console.error('Failed to delete model:', err);
       toast.error(`Failed to delete ${displayName}`, {
-        description: err instanceof Error ? err.message : 'Delete failed',
+        description: err instanceof Error ? err.message : 'Eliminazione non riuscita',
         duration: 4000
       });
     }
@@ -446,7 +452,7 @@ export function ModelManager({
     const modelNameMapping: { [key: string]: string } = {
       "small": "Small",
       "medium-q5_0": "Medium",
-      "large-v3-q5_0": "Large V3 Compressed",
+      "large-v3-q5_0": "Large V3 compresso",
       "large-v3-turbo": "Large V3 Turbo",
       "large-v3": "Large V3"
     };
@@ -473,19 +479,24 @@ export function ModelManager({
   if (error) {
     return (
       <div className={`bg-red-50 border border-red-200 rounded-lg p-4 ${className}`}>
-        <p className="text-sm text-red-800">Failed to load models</p>
+        <p className="text-sm text-red-800">Impossibile caricare i modelli</p>
         <p className="text-xs text-red-600 mt-1">{error}</p>
       </div>
     );
   }
 
   const basicModelNames = ["small", "medium-q5_0", "large-v3-q5_0", "large-v3-turbo", "large-v3"];
-  const basicModels = models.filter(m => basicModelNames.includes(m.name))
+  // Offline builds cannot download: only show models already on disk
+  const shownModels = isOffline ? models.filter(m => m.status === 'Available') : models;
+  const basicModels = shownModels.filter(m => basicModelNames.includes(m.name))
     .sort((a, b) => basicModelNames.indexOf(a.name) - basicModelNames.indexOf(b.name));
-  const advancedModels = models.filter(m => !basicModelNames.includes(m.name));
+  const advancedModels = shownModels.filter(m => !basicModelNames.includes(m.name));
 
   return (
     <div className={`space-y-3 ${className}`}>
+      {isOffline && (
+        <p className="text-xs text-gray-500">{OFFLINE_MODELS_NOTE}</p>
+      )}
       {/* Basic Models */}
       <div className="space-y-3">
         {basicModels.map((model) => {
@@ -517,7 +528,7 @@ export function ModelManager({
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="advanced-models">
             <AccordionTrigger>
-              <span className='text-lg'>Advanced Models</span>
+              <span className='text-lg'>Modelli avanzati</span>
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-3 pt-4">
@@ -621,7 +632,7 @@ function ModelCard({
       {/* Recommended Badge */}
       {isRecommended && (
         <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-          Recommended
+          Consigliato
         </div>
       )}
 
@@ -663,11 +674,11 @@ function ModelCard({
               </span>
               <span className="flex items-center space-x-1">
                 <span>🎯</span>
-                <span>{model.accuracy} accuracy</span>
+                <span>Precisione {ACCURACY_IT[model.accuracy] ?? model.accuracy}</span>
               </span>
               <span className="flex items-center space-x-1">
                 <span>⚡</span>
-                <span>{model.speed} processing</span>
+                <span>Velocità: {SPEED_IT[model.speed] ?? model.speed}</span>
               </span>
             </div>
           </div>
@@ -678,7 +689,7 @@ function ModelCard({
               <>
                 <div className="flex items-center gap-1.5 text-green-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs font-medium">Ready</span>
+                  <span className="text-xs font-medium">Pronto</span>
                 </div>
                 <AnimatePresence>
                   {isHovered && (
@@ -692,7 +703,7 @@ function ModelCard({
                         onDelete();
                       }}
                       className="text-gray-400 hover:text-red-600 transition-colors p-1"
-                      title="Delete model to free up space"
+                      title="Elimina il modello per liberare spazio"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -711,7 +722,7 @@ function ModelCard({
                 }}
                 className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                Download
+                Scarica
               </button>
             )}
 
@@ -723,7 +734,7 @@ function ModelCard({
                 }}
                 className="bg-red-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
               >
-                Retry
+                Riprova
               </button>
             )}
 
@@ -736,7 +747,7 @@ function ModelCard({
                   }}
                   className="bg-orange-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
                 >
-                  Delete
+                  Elimina
                 </button>
                 <button
                   onClick={(e) => {
@@ -745,7 +756,7 @@ function ModelCard({
                   }}
                   className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
                 >
-                  Re-download
+                  Scarica di nuovo
                 </button>
               </div>
             )}
@@ -763,7 +774,7 @@ function ModelCard({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-blue-600">
-                  {isCancelling ? 'Cancelling…' : 'Downloading...'}
+                  {isCancelling ? 'Cancelling…' : 'Download in corso...'}
                 </span>
                 {!isCancelling && (
                   <span className="text-sm font-semibold text-blue-600">{Math.round(downloadProgress)}%</span>
@@ -771,7 +782,7 @@ function ModelCard({
               </div>
               {isCancelling ? (
                 <span className="text-xs text-gray-500 font-medium px-2 py-1">
-                  Cancellation requested
+                  Annullamento richiesto
                 </span>
               ) : (
                 <button
@@ -780,9 +791,9 @@ function ModelCard({
                     onCancel();
                   }}
                   className="text-xs text-gray-600 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50"
-                  title="Cancel download"
+                  title="Annulla download"
                 >
-                  Cancel
+                  Annulla
                 </button>
               )}
             </div>
@@ -800,7 +811,7 @@ function ModelCard({
                   {formatFileSize(model.size_mb * downloadProgress / 100)} / {formatFileSize(model.size_mb)}
                 </>
               ) : (
-                'Downloading...'
+                'Download in corso...'
               )}
             </p>
           </motion.div>

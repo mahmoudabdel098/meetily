@@ -263,6 +263,7 @@ pub async fn pull_ollama_model<R: Runtime>(
     model_name: String,
     endpoint: Option<String>,
 ) -> Result<(), String> {
+    crate::local_only::ensure_downloads_allowed()?;
     // Check if model is already being downloaded
     {
         let downloading = DOWNLOADING_MODELS.read().await;

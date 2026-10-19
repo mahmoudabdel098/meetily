@@ -55,20 +55,20 @@ export const MODEL_DISPLAY_CONFIG: Record<string, ModelDisplayInfo> = {
   'parakeet-tdt-0.6b-v3-int8': {
     friendlyName: 'Lightning',
     icon: '⚡',
-    tagline: 'Real time • Best for speed, great accuracy',
+    tagline: 'Tempo reale • Il più veloce, ottima precisione',
     recommended: true,
     tier: 'fastest'
   },
   'parakeet-tdt-0.6b-v2-int8': {
     friendlyName: 'Compact',
     icon: '📦',
-    tagline: 'Real time • Smaller size',
+    tagline: 'Tempo reale • Più leggero',
     tier: 'balanced'
   },
   'parakeet-tdt-0.6b-v3-fp32': {
     friendlyName: 'Precise',
     icon: '🎯',
-    tagline: '20x real-time • Higher accuracy',
+    tagline: '20x tempo reale • Precisione maggiore',
     tier: 'precise'
   }
 };
@@ -78,7 +78,7 @@ export const MODEL_DISPLAY_CONFIG: Record<string, ModelDisplayInfo> = {
 // Source: https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx
 export const PARAKEET_MODEL_CONFIGS: Record<string, Partial<ParakeetModelInfo>> = {
   'parakeet-tdt-0.6b-v3-int8': {
-    description: 'Real time on M4 Max, optimized for speed',
+    description: 'Tempo reale, ottimizzato per la velocità',
     size_mb: 670, // Actual download: 652MB encoder + 18.2MB decoder + 0.2MB extras
     accuracy: 'High',
     speed: 'Ultra Fast',
@@ -92,7 +92,7 @@ export const PARAKEET_MODEL_CONFIGS: Record<string, Partial<ParakeetModelInfo>> 
     quantization: 'Int8'
   },
   'parakeet-tdt-0.6b-v3-fp32': {
-    description: '20x real-time on M4 Max, higher precision',
+    description: '20x tempo reale, precisione maggiore',
     size_mb: 2554, // Actual download: 2.44GB + 41.8MB encoder + 72.5MB decoder + 0.2MB extras
     accuracy: 'High',
     speed: 'Fast',
@@ -145,9 +145,9 @@ export function isQuantizedModel(modelName: string): boolean {
 export function getModelPerformanceBadge(quantization: QuantizationType): { label: string; color: string } {
   switch (quantization) {
     case 'FP32':
-      return { label: 'Full Precision', color: 'blue' };
+      return { label: 'Precisione piena', color: 'blue' };
     case 'Int8':
-      return { label: 'Int8 Quantized', color: 'green' };
+      return { label: 'Quantizzato Int8', color: 'green' };
     default:
       return { label: 'Standard', color: 'gray' };
   }

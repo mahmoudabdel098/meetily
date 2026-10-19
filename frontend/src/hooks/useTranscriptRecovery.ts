@@ -113,13 +113,13 @@ export function useTranscriptRecovery(): UseTranscriptRecoveryReturn {
       // 1. Load meeting metadata
       const metadata = await indexedDBService.getMeetingMetadata(meetingId);
       if (!metadata) {
-        throw new Error('Meeting metadata not found');
+        throw new Error('Dati della riunione non trovati');
       }
 
       // 2. Load all transcripts
       const transcripts = await loadMeetingTranscripts(meetingId);
       if (transcripts.length === 0) {
-        throw new Error('No transcripts found for this meeting');
+        throw new Error('Nessuna trascrizione per questa riunione');
       }
 
       // 3. Check for folder path
@@ -149,7 +149,7 @@ export function useTranscriptRecovery(): UseTranscriptRecoveryReturn {
             status: 'failed',
             chunk_count: 0,
             estimated_duration_seconds: 0,
-            message: error instanceof Error ? error.message : 'Unknown error'
+            message: error instanceof Error ? error.message : 'Errore sconosciuto'
           };
         }
       } else {
@@ -157,7 +157,7 @@ export function useTranscriptRecovery(): UseTranscriptRecoveryReturn {
           status: 'none',
           chunk_count: 0,
           estimated_duration_seconds: 0,
-          message: 'No folder path available'
+          message: 'Cartella non disponibile'
         };
       }
 
@@ -189,8 +189,8 @@ export function useTranscriptRecovery(): UseTranscriptRecoveryReturn {
         await applyPinnedSummaryLanguageToMeeting(savedMeetingId);
       } catch (error) {
         console.warn('Failed to apply pinned summary language to recovered meeting:', error);
-        toast.warning('Could not apply default summary language', {
-          description: 'The recovered meeting was saved, but the default summary language was not applied.',
+        toast.warning('Impossibile applicare la lingua predefinita del riassunto', {
+          description: 'La riunione recuperata è stata salvata, ma senza la lingua predefinita del riassunto.',
         });
       }
 

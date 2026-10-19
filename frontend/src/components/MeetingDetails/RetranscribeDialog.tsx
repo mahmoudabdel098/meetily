@@ -198,7 +198,7 @@ export function RetranscribeDialog({
 
   const handleStartRetranscription = async () => {
     if (!meetingFolderPath) {
-      setError('Meeting folder path not available');
+      setError('Cartella della riunione non disponibile');
       return;
     }
 
@@ -236,7 +236,7 @@ export function RetranscribeDialog({
         await invoke('cancel_retranscription_command');
         setIsProcessing(false);
         setProgress(null);
-        toast.info('Retranscription cancelled');
+        toast.info('Nuova trascrizione annullata');
       } catch (err) {
         console.error('Failed to cancel retranscription:', err);
       }
@@ -276,26 +276,26 @@ export function RetranscribeDialog({
             {isProcessing ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-                Retranscribing...
+                Nuova trascrizione in corso...
               </>
             ) : error ? (
               <>
                 <AlertCircle className="h-5 w-5 text-red-600" />
-                Retranscription Failed
+                Nuova trascrizione non riuscita
               </>
             ) : (
               <>
                 <RefreshCw className="h-5 w-5 text-blue-600" />
-                Retranscribe Meeting
+                Trascrivi di nuovo
               </>
             )}
           </DialogTitle>
           <DialogDescription>
             {isProcessing
-              ? progress?.message || 'Processing audio...'
+              ? progress?.message || 'Elaborazione dell\'audio...'
               : error
-                ? 'An error occurred during retranscription'
-                : 'Re-process the audio with different language settings'}
+                ? 'Errore durante la nuova trascrizione'
+                : 'Rielabora l\'audio con un\'altra lingua o modello'}
           </DialogDescription>
         </DialogHeader>
 
@@ -305,11 +305,11 @@ export function RetranscribeDialog({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Language</span>
+                  <span className="text-sm font-medium">Lingua</span>
                 </div>
                 <Select value={selectedLang} onValueChange={setSelectedLang}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select language" />
+                    <SelectValue placeholder="Scegli la lingua" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     {LANGUAGES.map((lang) => (
@@ -320,17 +320,17 @@ export function RetranscribeDialog({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Select a specific language to improve accuracy, or use auto-detect
+                  Scegli la lingua per una maggiore precisione, oppure il rilevamento automatico
                 </p>
               </div>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Language</span>
+                  <span className="text-sm font-medium">Lingua</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Language selection isn't supported for Parakeet. It always uses automatic detection.
+                  Con Parakeet la lingua viene sempre rilevata automaticamente.
                 </p>
               </div>
             )
@@ -340,11 +340,11 @@ export function RetranscribeDialog({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Model</span>
+                <span className="text-sm font-medium">Modello</span>
               </div>
               <Select value={selectedModelKey} onValueChange={setSelectedModelKey} disabled={loadingModels}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={loadingModels ? "Loading models..." : "Select model"} />
+                  <SelectValue placeholder={loadingModels ? "Caricamento dei modelli..." : "Scegli il modello"} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableModels.map((model) => (
@@ -355,7 +355,7 @@ export function RetranscribeDialog({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Choose a transcription model
+                Scegli il modello di trascrizione
               </p>
             </div>
           )}
@@ -391,7 +391,7 @@ export function RetranscribeDialog({
           {!isProcessing && !error && (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
+                Annulla
               </Button>
               <Button
                 onClick={handleStartRetranscription}
@@ -399,20 +399,20 @@ export function RetranscribeDialog({
                 disabled={!meetingFolderPath}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Start Retranscription
+                Avvia nuova trascrizione
               </Button>
             </>
           )}
           {isProcessing && (
             <Button variant="outline" onClick={handleCancel}>
               <X className="h-4 w-4 mr-2" />
-              Cancel
+              Annulla
             </Button>
           )}
           {error && (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Close
+                Chiudi
               </Button>
               <Button
                 onClick={() => {
@@ -421,7 +421,7 @@ export function RetranscribeDialog({
                 }}
                 variant="outline"
               >
-                Try Again
+                Riprova
               </Button>
             </>
           )}

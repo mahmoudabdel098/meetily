@@ -61,7 +61,7 @@ export function PermissionWarning({
             <div className="flex items-center gap-2">
               {!hasMicrophone && <Mic className="h-4 w-4" />}
               {!hasSystemAudio && <Speaker className="h-4 w-4" />}
-              {!hasMicrophone && !hasSystemAudio ? 'Permissions Required' : !hasMicrophone ? 'Microphone Permission Required' : 'System Audio Permission Required'}
+              {!hasMicrophone && !hasSystemAudio ? 'Permessi necessari' : !hasMicrophone ? 'Serve il permesso per il microfono' : 'Serve il permesso per l\'audio del computer'}
             </div>
           </AlertTitle>
           {/* Action Buttons */}
@@ -72,7 +72,7 @@ export function PermissionWarning({
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md transition-colors"
               >
                 <Mic className="h-4 w-4" />
-                Open Microphone Settings
+                Apri impostazioni microfono
               </button>
             )}
             {isMacOS && !hasSystemAudio && (
@@ -81,7 +81,7 @@ export function PermissionWarning({
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
               >
                 <Speaker className="h-4 w-4" />
-                Open Screen Recording Settings
+                Apri impostazioni registrazione schermo
               </button>
             )}
             <button
@@ -90,7 +90,7 @@ export function PermissionWarning({
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-md transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`h-4 w-4 ${isRechecking ? 'animate-spin' : ''}`} />
-              Recheck
+              Ricontrolla
             </button>
           </div>
           <AlertDescription className="text-amber-800 mt-2">
@@ -98,14 +98,14 @@ export function PermissionWarning({
             {!hasMicrophone && (
               <>
                 <p className="mb-3">
-                  Meetily needs access to your microphone to record meetings. No microphone devices were detected.
+                  Meetily ha bisogno del microfono per registrare le riunioni, ma non ne ha trovato nessuno.
                 </p>
                 <div className="space-y-2 text-sm mb-4">
-                  <p className="font-medium">Please check:</p>
+                  <p className="font-medium">Controlla che:</p>
                   <ul className="list-disc list-inside ml-2 space-y-1">
-                    <li>Your microphone is connected and powered on</li>
-                    <li>Microphone permission is granted in System Settings</li>
-                    <li>No other app is exclusively using the microphone</li>
+                    <li>il microfono sia collegato e acceso</li>
+                    <li>l'accesso al microfono sia consentito nelle impostazioni di Windows</li>
+                    <li>nessun'altra app stia usando il microfono in modo esclusivo</li>
                   </ul>
                 </div>
               </>
@@ -116,16 +116,16 @@ export function PermissionWarning({
               <>
                 <p className="mb-3">
                   {hasMicrophone
-                    ? 'System audio capture is not available. You can still record with your microphone, but computer audio won\'t be captured.'
-                    : 'System audio capture is also not available.'}
+                    ? 'L\'audio del computer non è disponibile. Puoi registrare con il microfono, ma l\'audio della call non verrà acquisito.'
+                    : 'Anche l\'audio del computer non è disponibile.'}
                 </p>
                 {isMacOS && (
                   <div className="space-y-2 text-sm mb-4">
-                    <p className="font-medium">To enable system audio on macOS:</p>
+                    <p className="font-medium">Per attivare l'audio del computer su macOS:</p>
                     <ul className="list-disc list-inside ml-2 space-y-1">
-                      <li>Install a virtual audio device (e.g., BlackHole 2ch)</li>
-                      <li>Grant Screen Recording permission to Meetily</li>
-                      <li>Configure your audio routing in Audio MIDI Setup</li>
+                      <li>Installa un dispositivo audio virtuale (es. BlackHole 2ch)</li>
+                      <li>Consenti a Meetily la registrazione dello schermo</li>
+                      <li>Configura l'instradamento audio in Configurazione MIDI Audio</li>
                     </ul>
                   </div>
                 )}

@@ -5,7 +5,8 @@
 //! - analytics (PostHog) are never initialised;
 //! - summaries may only use the built-in model or an LLM server on this PC
 //!   (localhost), so cloud providers and remote Ollama/OpenAI-compatible
-//!   endpoints are refused.
+//!   endpoints are refused;
+//! - model downloads are disabled: only the bundled models are used.
 //!
 //! This is a compile-time switch: it cannot be turned off from the UI or by
 //! editing files next to the executable.
@@ -29,10 +30,22 @@ pub fn is_loopback_url(url: &str) -> bool {
 pub fn ensure_url_allowed(url: &str) -> Result<(), String> {
     if LOCAL_ONLY && !is_loopback_url(url) {
         return Err(format!(
-            "Blocked: this local-only build never sends data outside this PC ({}). \
-             Use Built-in AI or an LLM server running on localhost.",
+            "Bloccato: questa versione non invia mai dati fuori da questo PC ({}). \
+             Usa Built-in AI oppure un server LLM in esecuzione su questo computer.",
             url
         ));
+    }
+    Ok(())
+}
+
+/// Local-only builds are fully offline: no model downloads either (the
+/// portable ZIP ships with its models).
+pub const DOWNLOADS_BLOCKED_MESSAGE: &str =
+    "Download disattivato: questa versione funziona completamente offline e usa solo i modelli inclusi.";
+
+pub fn ensure_downloads_allowed() -> Result<(), String> {
+    if LOCAL_ONLY {
+        return Err(DOWNLOADS_BLOCKED_MESSAGE.to_string());
     }
     Ok(())
 }

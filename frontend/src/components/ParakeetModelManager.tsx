@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocalOnly, OFFLINE_MODELS_NOTE } from '@/hooks/useLocalOnly';
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +28,7 @@ export function ParakeetModelManager({
   autoSave = false
 }: ParakeetModelManagerProps) {
   const [models, setModels] = useState<ParakeetModelInfo[]>([]);
+  const isOffline = useLocalOnly();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
@@ -71,9 +73,9 @@ export function ParakeetModelManager({
         setInitialized(true);
       } catch (err) {
         console.error('Failed to initialize Parakeet:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load models');
-        toast.error('Failed to load transcription models', {
-          description: err instanceof Error ? err.message : 'Unknown error',
+        setError(err instanceof Error ? err.message : 'Impossibile caricare i modelli');
+        toast.error('Impossibile caricare i modelli di trascrizione', {
+          description: err instanceof Error ? err.message : 'Errore sconosciuto',
           duration: 5000
         });
       } finally {
@@ -169,8 +171,8 @@ export function ParakeetModelManager({
             // Clean up throttle data
             progressThrottleRef.current.delete(modelName);
 
-            toast.success(`${displayInfo?.icon || '✓'} ${displayName} ready!`, {
-              description: 'Model downloaded and ready to use',
+            toast.success(`${displayInfo?.icon || '✓'} ${displayName} pronto!`, {
+              description: 'Modello scaricato e pronto',
               duration: 4000
             });
 
@@ -209,11 +211,11 @@ export function ParakeetModelManager({
             // Clean up throttle data
             progressThrottleRef.current.delete(modelName);
 
-            toast.error(`Failed to download ${displayName}`, {
+            toast.error(`Download di ${displayName} non riuscito`, {
               description: error,
               duration: 6000,
               action: {
-                label: 'Retry',
+                label: 'Riprova',
                 onClick: () => downloadModel(modelName)
               }
             });
@@ -235,7 +237,7 @@ export function ParakeetModelManager({
             ? failedRegistration.reason.message
             : typeof failedRegistration.reason === 'string'
               ? failedRegistration.reason
-              : 'Failed to listen for Parakeet model updates';
+              : 'Impossibile seguire gli aggiornamenti del modello Parakeet';
           setError(message);
           setLoading(false);
         }
@@ -276,15 +278,15 @@ export function ParakeetModelManager({
       const outcome = await ParakeetAPI.cancelDownload(modelName);
       if (outcome === 'pending') {
         toast.info(`Cancelling ${displayName}...`, {
-          description: 'The download is still shutting down. Retry will be available when cleanup completes.',
+          description: 'Il download si sta ancora chiudendo. Potrai riprovare tra poco.',
           duration: 4000
         });
       }
     } catch (err) {
       clearCancellingModel(modelName);
       console.error('Failed to cancel download:', err);
-      toast.error('Failed to cancel download', {
-        description: err instanceof Error ? err.message : 'Unknown error',
+      toast.error('Impossibile annullare il download', {
+        description: err instanceof Error ? err.message : 'Errore sconosciuto',
         duration: 4000
       });
     }
@@ -309,7 +311,7 @@ export function ParakeetModelManager({
       );
 
       toast.info(`Downloading ${displayName}...`, {
-        description: 'This may take a few minutes',
+        description: 'Potrebbe richiedere qualche minuto',
         duration: 5000  // Auto-dismiss after 5 seconds
       });
 
@@ -322,7 +324,7 @@ export function ParakeetModelManager({
         return newSet;
       });
 
-      const errorMessage = err instanceof Error ? err.message : 'Download failed';
+      const errorMessage = err instanceof Error ? err.message : 'Download non riuscito';
       setModels(prev =>
         prev.map(model =>
           model.name === modelName ? { ...model, status: { Error: errorMessage } } : model
@@ -342,7 +344,7 @@ export function ParakeetModelManager({
 
     const displayInfo = getModelDisplayInfo(modelName);
     const displayName = displayInfo?.friendlyName || modelName;
-    toast.success(`Switched to ${displayName}`, {
+    toast.success(`Ora usi ${displayName}`, {
       duration: 3000
     });
   };
@@ -359,7 +361,7 @@ export function ParakeetModelManager({
       setModels(modelList);
 
       toast.success(`${displayName} deleted`, {
-        description: 'Model removed to free up space',
+        description: 'Modello eliminato',
         duration: 3000
       });
 
@@ -369,8 +371,8 @@ export function ParakeetModelManager({
       }
     } catch (err) {
       console.error('Failed to delete model:', err);
-      toast.error(`Failed to delete ${displayName}`, {
-        description: err instanceof Error ? err.message : 'Delete failed',
+      toast.error(`Impossibile eliminare ${displayName}`, {
+        description: err instanceof Error ? err.message : 'Eliminazione non riuscita',
         duration: 4000
       });
     }
@@ -390,21 +392,26 @@ export function ParakeetModelManager({
   if (error) {
     return (
       <div className={`bg-red-50 border border-red-200 rounded-lg p-4 ${className}`}>
-        <p className="text-sm text-red-800">Failed to load models</p>
+        <p className="text-sm text-red-800">Impossibile caricare i modelli</p>
         <p className="text-xs text-red-600 mt-1">{error}</p>
       </div>
     );
   }
 
-  const recommendedModel = models.find(m =>
+  // Offline builds cannot download: only show models already on disk
+  const shownModels = isOffline ? models.filter(m => m.status === 'Available') : models;
+  const recommendedModel = shownModels.find(m =>
     m.name === 'parakeet-tdt-0.6b-v3-int8'
   );
-  const otherModels = models.filter(m =>
+  const otherModels = shownModels.filter(m =>
     m.name !== 'parakeet-tdt-0.6b-v3-int8'
   );
 
   return (
     <div className={`space-y-3 ${className}`}>
+      {isOffline && (
+        <p className="text-xs text-gray-500">{OFFLINE_MODELS_NOTE}</p>
+      )}
       {/* Recommended Model */}
       {recommendedModel && (
         <ModelCard
@@ -526,7 +533,7 @@ function ModelCard({
       {/* Recommended Badge */}
       {isRecommended && (
         <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
-          Recommended
+          Consigliato
         </div>
       )}
 
@@ -558,7 +565,7 @@ function ModelCard({
               <>
                 <div className="flex items-center gap-1.5 text-green-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs font-medium">Ready</span>
+                  <span className="text-xs font-medium">Pronto</span>
                 </div>
                 <AnimatePresence>
                   {isHovered && (
@@ -572,7 +579,7 @@ function ModelCard({
                         onDelete();
                       }}
                       className="text-gray-400 hover:text-red-600 transition-colors p-1"
-                      title="Delete model to free up space"
+                      title="Elimina il modello per liberare spazio"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -591,7 +598,7 @@ function ModelCard({
                 }}
                 className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                Download
+                Scarica
               </button>
             )}
 
@@ -603,7 +610,7 @@ function ModelCard({
                 }}
                 className="bg-red-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
               >
-                Retry
+                Riprova
               </button>
             )}
 
@@ -616,7 +623,7 @@ function ModelCard({
                   }}
                   className="bg-orange-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
                 >
-                  Delete
+                  Elimina
                 </button>
                 <button
                   onClick={(e) => {
@@ -625,7 +632,7 @@ function ModelCard({
                   }}
                   className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
                 >
-                  Re-download
+                  Scarica di nuovo
                 </button>
               </div>
             )}
@@ -643,7 +650,7 @@ function ModelCard({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-blue-600">
-                  {isCancelling ? 'Cancelling…' : 'Downloading...'}
+                  {isCancelling ? 'Cancelling…' : 'Download in corso...'}
                 </span>
                 {!isCancelling && (
                   <span className="text-sm font-semibold text-blue-600">
@@ -653,7 +660,7 @@ function ModelCard({
               </div>
               {isCancelling ? (
                 <span className="text-xs text-gray-500 font-medium px-2 py-1">
-                  Cancellation requested
+                  Annullamento richiesto
                 </span>
               ) : (
                 <button
@@ -662,9 +669,9 @@ function ModelCard({
                     onCancel();
                   }}
                   className="text-xs text-gray-600 hover:text-red-600 font-medium transition-colors px-2 py-1 rounded hover:bg-red-50"
-                  title="Cancel download"
+                  title="Annulla download"
                 >
-                  Cancel
+                  Annulla
                 </button>
               )}
             </div>
@@ -682,7 +689,7 @@ function ModelCard({
                   {formatFileSize(model.size_mb * displayedProgress / 100)} / {formatFileSize(model.size_mb)}
                 </>
               ) : (
-                'Downloading...'
+                'Download in corso...'
               )}
             </p>
           </motion.div>

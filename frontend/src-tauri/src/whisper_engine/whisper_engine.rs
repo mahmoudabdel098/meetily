@@ -1071,6 +1071,7 @@ impl WhisperEngine {
     }
 
     pub async fn download_model(&self, model_name: &str, progress_callback: Option<Box<dyn Fn(u8) + Send>>) -> Result<()> {
+        crate::local_only::ensure_downloads_allowed().map_err(|e| anyhow!(e))?;
         log::info!("Starting download for model: {}", model_name);
 
         let model_url = match model_name {

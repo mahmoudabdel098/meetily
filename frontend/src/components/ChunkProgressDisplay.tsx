@@ -93,11 +93,11 @@ export function ChunkProgressDisplay({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <h3 className="text-lg font-semibold text-gray-900">
-            Processing Progress
+            Avanzamento
           </h3>
           {isPaused && (
             <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-              Paused
+              In pausa
             </span>
           )}
         </div>
@@ -109,14 +109,14 @@ export function ChunkProgressDisplay({
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors"
               disabled={progress.processing_chunks === 0 && progress.completed_chunks === progress.total_chunks}
             >
-              Pause
+              Pausa
             </button>
           ) : (
             <button
               onClick={onResume}
               className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
             >
-              Resume
+              Riprendi
             </button>
           )}
 
@@ -124,7 +124,7 @@ export function ChunkProgressDisplay({
             onClick={onCancel}
             className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors"
           >
-            Cancel
+            Annulla
           </button>
         </div>
       </div>
@@ -154,28 +154,28 @@ export function ChunkProgressDisplay({
           <div className="text-lg font-semibold text-green-600">
             {progress.completed_chunks}
           </div>
-          <div className="text-gray-600">Completed</div>
+          <div className="text-gray-600">Completato</div>
         </div>
 
         <div className="text-center">
           <div className="text-lg font-semibold text-blue-600">
             {progress.processing_chunks}
           </div>
-          <div className="text-gray-600">Processing</div>
+          <div className="text-gray-600">In elaborazione</div>
         </div>
 
         <div className="text-center">
           <div className="text-lg font-semibold text-gray-600">
             {progress.total_chunks - progress.completed_chunks - progress.processing_chunks - progress.failed_chunks}
           </div>
-          <div className="text-gray-600">Pending</div>
+          <div className="text-gray-600">In attesa</div>
         </div>
 
         <div className="text-center">
           <div className="text-lg font-semibold text-red-600">
             {progress.failed_chunks}
           </div>
-          <div className="text-gray-600">Failed</div>
+          <div className="text-gray-600">Non riuscito</div>
         </div>
       </div>
 
@@ -267,7 +267,7 @@ export function ChunkProgressMini({ progress, className = '' }: { progress: Proc
     <div className={`bg-gray-50 border border-gray-200 rounded-lg p-3 ${className}`}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-gray-700">
-          Processing
+          In elaborazione
         </span>
         <span className="text-sm font-medium text-gray-700">
           {completionPercentage}%
