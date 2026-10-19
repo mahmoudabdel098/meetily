@@ -76,6 +76,10 @@ Usa un canale consentito dalla tua azienda (OneDrive aziendale, rete interna, ec
      ad aggirare il blocco.
 4. Completa l'onboarding. I modelli risultano già presenti, quindi non c'è nulla da scaricare.
 
+   Non avviare `meetily.exe` facendo doppio clic dentro lo ZIP: Windows lo aprirebbe da solo,
+   senza i modelli accanto, e l'onboarding resterebbe fermo su "Preparazione in corso".
+   Estrai sempre prima tutta la cartella.
+
 ### 4. Registrare una call di Teams
 
 Una volta sola, nelle impostazioni di registrazione di Meetily:

@@ -418,14 +418,27 @@ pub async fn parakeet_download_model<R: Runtime>(
 
         // Ensure models are discovered before downloading
         // This populates available_models so we don't get "Model not found" error
-        if let Err(e) = engine.discover_models().await {
-            log::warn!("Failed to discover models before download: {}", e);
-            // Continue anyway, maybe it will work if the model is already known
-        }
+        let already_available = match engine.discover_models().await {
+            Ok(models) => models.iter().any(|m| {
+                m.name == model_name && matches!(m.status, crate::parakeet_engine::ModelStatus::Available)
+            }),
+            Err(e) => {
+                log::warn!("Failed to discover models before download: {}", e);
+                // Continue anyway, maybe it will work if the model is already known
+                false
+            }
+        };
 
-        let result = engine
-            .download_model_detailed(&model_name, Some(progress_callback))
-            .await;
+        // A model already on disk (e.g. bundled with the portable ZIP) needs no
+        // network access: report it as downloaded right away
+        let result = if already_available {
+            log::info!("Parakeet model {} already on disk, nothing to download", model_name);
+            Ok(())
+        } else {
+            engine
+                .download_model_detailed(&model_name, Some(progress_callback))
+                .await
+        };
 
         match result {
             Ok(()) => {

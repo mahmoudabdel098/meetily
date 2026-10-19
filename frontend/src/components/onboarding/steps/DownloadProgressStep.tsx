@@ -165,6 +165,13 @@ export function DownloadProgressStep() {
     checkPlatform();
   }, []);
 
+  // The on-disk check can finish after this step mounts (bundled models)
+  useEffect(() => {
+    if (parakeetDownloaded) {
+      setParakeetState((prev) => ({ ...prev, status: 'completed', progress: 100 }));
+    }
+  }, [parakeetDownloaded]);
+
   // Start the required transcription model immediately; summary readiness must not block it.
   useEffect(() => {
     if (parakeetDownloadStartedRef.current) return;

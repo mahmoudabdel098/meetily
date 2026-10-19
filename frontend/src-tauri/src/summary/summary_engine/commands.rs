@@ -187,10 +187,18 @@ pub async fn builtin_ai_download_model<R: Runtime>(
         );
     });
 
-    match manager
-        .download_model_detailed(&model_name, Some(progress_callback))
-        .await
-    {
+    // A model already on disk (e.g. bundled with the portable ZIP) needs no
+    // network access: report it as downloaded right away
+    let download_result = if manager.is_model_ready(&model_name, true).await {
+        log::info!("Built-in model {} already on disk, nothing to download", model_name);
+        Ok(())
+    } else {
+        manager
+            .download_model_detailed(&model_name, Some(progress_callback))
+            .await
+    };
+
+    match download_result {
         Ok(_) => {
             // Download task completed successfully (validation passed, status set to Available)
             let _ = app.emit(

@@ -373,6 +373,15 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         // Check if any downloads are active to restore isBackgroundDownloading state
         await checkActiveDownloads();
       } else {
+        // First launch: models may already be on disk (bundled with the portable ZIP)
+        try {
+          await invoke('parakeet_init');
+          const onDisk = await invoke<boolean>('parakeet_has_available_models');
+          setParakeetDownloaded(onDisk);
+          console.log('[OnboardingContext] First launch, Parakeet on disk:', onDisk);
+        } catch (error) {
+          console.warn('[OnboardingContext] Failed to check Parakeet on first launch:', error);
+        }
         await initializeSummaryModelSelection();
       }
     } catch (error) {
