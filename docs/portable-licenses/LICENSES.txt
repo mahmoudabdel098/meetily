@@ -1,0 +1,79 @@
+LICENZE DEI COMPONENTI
+======================
+
+Questo programma è software open source assemblato da componenti di terze
+parti. Le loro licenze richiedono che le note seguenti accompagnino ogni copia
+del programma. Nessun componente invia dati fuori dal PC.
+
+
+1. Applicazione (codice sorgente originale "Meetily")
+-----------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Zackriya Solutions
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Modifiche di questa versione (modalità portable e local-only, rilevamento
+delle call, riconoscimento di chi parla, export PDF/Word): stessa licenza MIT.
+
+
+2. ffmpeg.exe
+-------------
+FFmpeg 8.0.1, build "essentials" per Windows.
+Licenza: GNU General Public License versione 3 (testo completo: GPL-3.0.txt).
+FFmpeg è un programma separato, usato solo per convertire e unire l'audio.
+Il codice sorgente di FFmpeg è disponibile presso il progetto FFmpeg
+(ffmpeg.org).
+
+
+3. onnxruntime.dll
+------------------
+ONNX Runtime, Copyright (c) Microsoft Corporation. Licenza MIT
+(nota completa: onnxruntime-LICENSE.txt).
+
+
+4. Modello di trascrizione: data\models\parakeet\
+--------------------------------------------------
+NVIDIA Parakeet TDT 0.6B v3, convertito in formato ONNX (int8).
+Copyright NVIDIA Corporation. Licenza: Creative Commons Attribution 4.0
+International (CC-BY-4.0). Modello originale: "nvidia/parakeet-tdt-0.6b-v3"
+su Hugging Face; conversione ONNX: "istupakov/parakeet-tdt-0.6b-v3-onnx".
+
+
+5. Modello dei riassunti: data\models\summary\
+-----------------------------------------------
+Qwen 3.5 2B (quantizzazione GGUF Q4_K_M). Copyright Alibaba Cloud (Qwen team).
+Licenza: Apache License 2.0 (testo completo: Apache-2.0.txt).
+
+
+6. Modello di riconoscimento della voce: data\models\speaker\
+--------------------------------------------------------------
+3D-Speaker CAM++ (speech_campplus_sv_en_voxceleb_16k), Copyright Alibaba
+DAMO Academy (Speech Lab), distribuito in formato ONNX dal progetto
+sherpa-onnx (k2-fsa). Licenza: Apache License 2.0 (testo completo:
+Apache-2.0.txt).
+
+
+7. Librerie incluse nell'eseguibile
+-----------------------------------
+L'eseguibile include librerie open source Rust e JavaScript con licenze
+permissive (MIT, Apache-2.0, BSD, ISC, Zlib, MPL-2.0), tra cui Tauri,
+whisper.cpp, llama.cpp, React, Next.js, docx e jsPDF. Le rispettive note di
+copyright sono conservate nel codice sorgente del progetto.

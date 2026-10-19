@@ -7,6 +7,7 @@ import { invoke } from "@tauri-apps/api/core"
 import Analytics from "@/lib/analytics"
 import AnalyticsConsentSwitch from "./AnalyticsConsentSwitch"
 import { CallDetectionSettings } from "./CallDetectionSettings"
+import { TranscriptFolderSettings } from "./TranscriptFolderSettings"
 import { useConfig, NotificationSettings } from "@/contexts/ConfigContext"
 
 export function PreferenceSettings() {
@@ -162,6 +163,9 @@ export function PreferenceSettings() {
 
       {/* Automatic call detection (Windows only) */}
       <CallDetectionSettings />
+
+      {/* Folder where every meeting is saved as files */}
+      <TranscriptFolderSettings />
 
       {/* Data Storage Locations Section */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">

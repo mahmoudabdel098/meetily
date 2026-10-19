@@ -707,6 +707,8 @@ pub struct AudioPipeline {
     mixer: ProfessionalAudioMixer,
     // Recording sender for pre-mixed audio
     recording_sender_for_mixed: Option<mpsc::UnboundedSender<AudioChunk>>,
+    // Speaker labels ("Tu" / "Partecipante N") for each speech segment
+    diarizer: crate::diarization::Diarizer,
 }
 
 impl AudioPipeline {
@@ -785,6 +787,7 @@ impl AudioPipeline {
             ring_buffer,
             mixer,
             recording_sender_for_mixed: None,  // Will be set by manager
+            diarizer: crate::diarization::Diarizer::new(sample_rate),
         })
     }
 
@@ -849,6 +852,8 @@ impl AudioPipeline {
                         if let Some((mic_window, sys_window)) = self.ring_buffer.extract_window() {
                             // Simple mixing without aggressive ducking
                             let mixed_clean = self.mixer.mix_window(&mic_window, &sys_window);
+                            // Keep per-stream energy and call audio on the VAD timeline for speaker labels
+                            self.diarizer.push_window(&mic_window, &sys_window);
 
                             // NO POST-GAIN NEEDED: Microphone already normalized by EBU R128 to -23 LUFS
                             // This is broadcast-standard loudness (Netflix/YouTube/Spotify level)
@@ -865,6 +870,12 @@ impl AudioPipeline {
                                         if segment.samples.len() >= 800 {  // Minimum 50ms at 16kHz - matches Parakeet capability
                                             info!("📤 Sending VAD segment: {:.1}ms, {} samples",
                                                   duration_ms, segment.samples.len());
+
+                                            self.diarizer.label_segment(
+                                                self.chunk_id_counter,
+                                                segment.start_timestamp_ms,
+                                                segment.end_timestamp_ms,
+                                            );
 
                                             let transcription_chunk = AudioChunk {
                                                 data: segment.samples,
@@ -935,6 +946,12 @@ impl AudioPipeline {
                     if segment.samples.len() >= 800 {
                         info!("📤 Sending final VAD segment to Whisper: {:.1}ms duration, {} samples",
                               duration_ms, segment.samples.len());
+
+                        self.diarizer.label_segment(
+                            self.chunk_id_counter,
+                            segment.start_timestamp_ms,
+                            segment.end_timestamp_ms,
+                        );
 
                         let transcription_chunk = AudioChunk {
                             data: segment.samples,

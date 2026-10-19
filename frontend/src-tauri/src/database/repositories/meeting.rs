@@ -92,6 +92,7 @@ impl MeetingsRepository {
                     audio_start_time: t.audio_start_time,
                     audio_end_time: t.audio_end_time,
                     duration: t.duration,
+                    speaker: t.speaker,
                 })
                 .collect::<Vec<_>>();
 
@@ -163,6 +164,23 @@ impl MeetingsRepository {
         .await?;
 
         Ok((transcripts, total.0))
+    }
+
+    /// Renames a speaker label in one meeting ("Partecipante 1" -> "Marco").
+    /// Giving two speakers the same name merges them. Returns rows changed.
+    pub async fn rename_speaker(
+        pool: &SqlitePool,
+        meeting_id: &str,
+        old_name: &str,
+        new_name: &str,
+    ) -> Result<u64, SqlxError> {
+        let result = sqlx::query("UPDATE transcripts SET speaker = ? WHERE meeting_id = ? AND speaker = ?")
+            .bind(new_name)
+            .bind(meeting_id)
+            .bind(old_name)
+            .execute(pool)
+            .await?;
+        Ok(result.rows_affected())
     }
 
     pub async fn update_meeting_title(

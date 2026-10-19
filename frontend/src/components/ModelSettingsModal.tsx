@@ -17,7 +17,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
-import { Lock, Unlock, Eye, EyeOff, RefreshCw, CheckCircle2, XCircle, ChevronDown, ChevronUp, Download, ExternalLink, Check, ChevronsUpDown } from 'lucide-react';
+import { Lock, Unlock, Eye, EyeOff, RefreshCw, CheckCircle2, XCircle, ChevronDown, ChevronUp, Download, Check, ChevronsUpDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
@@ -739,12 +739,8 @@ export function ModelSettingsModal({
       // Check if Ollama is not installed and show appropriate error
       if (isOllamaNotInstalledError(errorMsg)) {
         toast.error('Ollama is not installed', {
-          description: 'Please download and install Ollama before downloading models.',
+          description: 'Ollama must be installed and running on this PC to use its models. Built-in AI works without it.',
           duration: 7000,
-          action: {
-            label: 'Download',
-            onClick: () => invoke('open_external_url', { url: 'https://ollama.com/download' })
-          }
         });
         // Update the installation status flag
         setOllamaNotInstalled(true);
@@ -1234,18 +1230,9 @@ export function ModelSettingsModal({
                   <div className="space-y-4">
                     <Alert className="border-orange-500 bg-orange-50">
                       <AlertDescription className="text-orange-800">
-                        Ollama is not installed or not running. Please download and install Ollama to use local models.
+                        Ollama is not installed or not running on this PC. Use Built-in AI, or ask your IT team to install Ollama.
                       </AlertDescription>
                     </Alert>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => invoke('open_external_url', { url: 'https://ollama.com/download' })}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Download Ollama
-                    </Button>
                     <div className="text-sm text-muted-foreground text-center">
                       After installing Ollama, restart this application and click "Fetch Models" to continue.
                     </div>

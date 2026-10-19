@@ -13,6 +13,7 @@ import {
   detectAndCacheSummaryLanguage,
 } from '@/lib/summary-language-preferences';
 import { storePath } from '@/lib/portable';
+import { autoSaveMeeting } from '@/lib/transcriptFolder';
 
 type SummaryStatus = 'idle' | 'processing' | 'summarizing' | 'regenerating' | 'completed' | 'error';
 
@@ -296,6 +297,9 @@ export function useRecordingStop(
 
           // Mark meeting as saved in IndexedDB (for recovery system)
           await markMeetingAsSaved();
+
+          // Write the transcript file to the user's transcript folder (refreshed again once the summary is ready)
+          void autoSaveMeeting(meetingId);
 
           // Clean up session storage
           sessionStorage.removeItem('last_recording_folder_path');

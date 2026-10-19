@@ -129,6 +129,9 @@ jobs:
           path: frontend/src-tauri/binaries/onnxruntime
           key: ${{ runner.os }}-onnxruntime-x86_64-pc-windows-msvc-${{ hashFiles('frontend/src-tauri/build/onnxruntime.rs') }}
 
+      - name: Test speaker identification library
+        run: cargo test -p speaker-id --release
+
       - name: Build Tauri app (no installer)
         shell: pwsh
         run: |
@@ -175,6 +178,9 @@ jobs:
 
           Copy-Item "docs/PORTABLE_WINDOWS.md" -Destination (Join-Path $out "LEGGIMI-PORTABLE.md")
 
+          # Third-party license notices (required by MIT, GPL-3.0, Apache-2.0, CC-BY-4.0)
+          Copy-Item "docs/portable-licenses/*" -Destination $out
+
           Write-Host "Portable folder contents:"
           Get-ChildItem $out -Recurse | Select-Object FullName, Length | Format-Table -AutoSize
 
@@ -187,6 +193,21 @@ jobs:
 
           "name=$name" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "path=$out" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      # Voice model for "who said what": small, always included
+      - name: Add speaker identification model
+        shell: pwsh
+        run: |
+          $target = Join-Path "${{ steps.assemble.outputs.path }}" "data/models/speaker/campplus.onnx"
+          New-Item -ItemType Directory -Force -Path (Split-Path $target -Parent) | Out-Null
+          $url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/speaker-recongition-models/3dspeaker_speech_campplus_sv_en_voxceleb_16k.onnx"
+          curl.exe -fL --retry 5 --retry-delay 10 -o $target $url
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $hash = (Get-FileHash $target -Algorithm SHA256).Hash.ToLower()
+          if ($hash -ne "357a834f702b80161e5b981182c038e18553c1f2ca752ed6cec2052365d4129b") {
+            Write-Error "Unexpected speaker model checksum: $hash"
+            exit 1
+          }
 
       - name: Cache offline models
         if: ${{ github.event.inputs.include-models == 'true' }}

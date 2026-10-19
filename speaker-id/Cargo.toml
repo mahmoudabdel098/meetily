@@ -1,0 +1,9 @@
+[package]
+name = "speaker-id"
+version = "0.1.0"
+edition.workspace = true
+description = "Speaker features (Kaldi fbank) and online clustering for transcript diarization"
+publish = false
+
+[dependencies]
+realfft = "3.4.0"

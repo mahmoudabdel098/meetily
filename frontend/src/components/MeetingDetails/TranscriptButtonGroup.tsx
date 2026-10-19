@@ -3,9 +3,11 @@
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { Copy, FolderOpen, RefreshCw } from 'lucide-react';
+import { Copy, FolderOpen, RefreshCw, Users } from 'lucide-react';
 import Analytics from '@/lib/analytics';
 import { RetranscribeDialog } from './RetranscribeDialog';
+import { ExportMenu } from './ExportMenu';
+import { SpeakersDialog } from './SpeakersDialog';
 import { useConfig } from '@/contexts/ConfigContext';
 
 
@@ -29,6 +31,7 @@ export function TranscriptButtonGroup({
 }: TranscriptButtonGroupProps) {
   const { betaFeatures } = useConfig();
   const [showRetranscribeDialog, setShowRetranscribeDialog] = useState(false);
+  const [showSpeakersDialog, setShowSpeakersDialog] = useState(false);
 
   const handleRetranscribeComplete = useCallback(async () => {
     // Refetch transcripts to show the updated data
@@ -69,6 +72,22 @@ export function TranscriptButtonGroup({
           <span className="hidden @[22rem]:inline">Recording</span>
         </Button>
 
+        {meetingId && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="px-2 @[22rem]:px-3"
+            onClick={() => setShowSpeakersDialog(true)}
+            disabled={transcriptCount === 0}
+            title="Rinomina chi ha parlato"
+          >
+            <Users />
+            <span className="hidden @[22rem]:inline">Partecipanti</span>
+          </Button>
+        )}
+
+        {meetingId && <ExportMenu meetingId={meetingId} disabled={transcriptCount === 0} />}
+
         {betaFeatures.importAndRetranscribe && meetingId && meetingFolderPath && (
           <Button
             size="sm"
@@ -85,6 +104,15 @@ export function TranscriptButtonGroup({
           </Button>
         )}
       </ButtonGroup>
+
+      {meetingId && (
+        <SpeakersDialog
+          open={showSpeakersDialog}
+          onOpenChange={setShowSpeakersDialog}
+          meetingId={meetingId}
+          onRenamed={onRefetchTranscripts}
+        />
+      )}
 
       {betaFeatures.importAndRetranscribe && meetingId && meetingFolderPath && (
         <RetranscribeDialog

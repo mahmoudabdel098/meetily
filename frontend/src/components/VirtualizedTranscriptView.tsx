@@ -63,12 +63,30 @@ function cleanStopWords(text: string): string {
     return cleanedText.replace(/\s+/g, ' ').trim();
 }
 
+// Stable colour per speaker label ("Tu" is always blue)
+const SPEAKER_COLORS = [
+    'text-emerald-700 bg-emerald-50',
+    'text-amber-700 bg-amber-50',
+    'text-purple-700 bg-purple-50',
+    'text-rose-700 bg-rose-50',
+    'text-cyan-700 bg-cyan-50',
+    'text-lime-700 bg-lime-50',
+];
+
+function speakerColor(speaker: string): string {
+    if (speaker === 'Tu') return 'text-blue-700 bg-blue-50';
+    let hash = 0;
+    for (const ch of speaker) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+    return SPEAKER_COLORS[hash % SPEAKER_COLORS.length];
+}
+
 // Memoized transcript segment component
 const TranscriptSegment = memo(function TranscriptSegment({
     id,
     timestamp,
     text,
     confidence,
+    speaker,
     isStreaming,
     showConfidence,
 }: {
@@ -76,6 +94,7 @@ const TranscriptSegment = memo(function TranscriptSegment({
     timestamp: number;
     text: string;
     confidence?: number;
+    speaker?: string | null;
     isStreaming: boolean;
     showConfidence: boolean;
 }) {
@@ -97,6 +116,11 @@ const TranscriptSegment = memo(function TranscriptSegment({
                     </TooltipContent>
                 </Tooltip>
                 <div className="flex-1">
+                    {speaker && (
+                        <span className={`inline-block text-xs font-semibold rounded px-1.5 py-0.5 mb-1 ${speakerColor(speaker)}`}>
+                            {speaker}
+                        </span>
+                    )}
                     {isStreaming ? (
                         <div className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-2">
                             <p className="text-base text-gray-800 leading-relaxed">{displayText}</p>
@@ -294,6 +318,7 @@ export const VirtualizedTranscriptView: React.FC<VirtualizedTranscriptViewProps>
                                         timestamp={segment.timestamp}
                                         text={getDisplayText(segment)}
                                         confidence={segment.confidence}
+                                        speaker={segment.speaker}
                                         isStreaming={isStreaming}
                                         showConfidence={showConfidence}
                                     />
@@ -350,6 +375,7 @@ export const VirtualizedTranscriptView: React.FC<VirtualizedTranscriptViewProps>
                                         timestamp={segment.timestamp}
                                         text={getDisplayText(segment)}
                                         confidence={segment.confidence}
+                                        speaker={segment.speaker}
                                         isStreaming={isStreaming}
                                         showConfidence={showConfidence}
                                     />

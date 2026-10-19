@@ -42,6 +42,8 @@ pub mod call_detection;
 pub mod config;
 pub mod console_utils;
 pub mod database;
+pub mod diarization;
+pub mod exports;
 pub mod notifications;
 pub mod ollama;
 pub mod local_only;
@@ -472,7 +474,6 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .manage(whisper_engine::parallel_commands::ParallelProcessorState::new())
         .manage(Arc::new(RwLock::new(
@@ -558,6 +559,9 @@ pub fn run() {
 
             // Set Parakeet models directory
             parakeet_engine::commands::set_models_directory(&_app.handle());
+
+            // Speaker identification model directory ("who said what")
+            diarization::init(&_app.handle());
 
             // Initialize Parakeet engine on startup
             tauri::async_runtime::spawn(async {
@@ -743,7 +747,6 @@ pub fn run() {
             api::open_meeting_folder,
             api::test_backend_connection,
             api::debug_backend_connection,
-            api::open_external_url,
             // Custom OpenAI commands
             api::api_save_custom_openai_config,
             api::api_get_custom_openai_config,
@@ -833,6 +836,11 @@ pub fn run() {
             local_only::is_local_only_build,
             call_detection::start_detected_call_recording,
             call_detection::is_call_detection_supported,
+            api::api_rename_speaker,
+            exports::save_export_file,
+            exports::select_folder,
+            exports::write_export_to_folder,
+            exports::get_default_transcripts_folder,
             // Retranscription commands
             audio::retranscription::start_retranscription_command,
             audio::retranscription::cancel_retranscription_command,

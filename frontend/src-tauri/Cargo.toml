@@ -126,6 +126,8 @@ dirs = "5.0.1"
 
 # Additional dependencies for notification system
 url = "2.5.0"
+base64 = "0.22"
+speaker-id = { path = "../../speaker-id" }
 
 
 # System monitoring for resource management
@@ -156,7 +158,6 @@ tauri-plugin-fs = "2.4.0"
 tauri-plugin-dialog = "2.3.0"
 tauri-plugin-store = "2.4.0"
 tauri-plugin-notification = "2.3.1"
-tauri-plugin-updater = "2.3.0"
 tauri-plugin-process = "2.3.0"
 
 # Desktop-only single instance guard

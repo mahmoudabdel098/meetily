@@ -18,6 +18,7 @@ import {
   readCachedDetectedSummaryLanguage,
 } from '@/lib/summary-language-preferences';
 import { parseSummaryContent, readSummaryMetadata } from '@/lib/summary-content';
+import { autoSaveMeeting } from '@/lib/transcriptFolder';
 
 async function resolveSummaryLanguage(
   meetingId: string,
@@ -252,6 +253,8 @@ export function useSummaryGeneration({
       setSummaryStatus('completed');
       activeProcessIdRef.current = null;
       setSummaryError(null);
+      // Refresh the meeting file in the transcript folder, now with the summary
+      void autoSaveMeeting(meeting.id);
       if (metadata.normalizationFallback) {
         toast.warning('Summary generated with fallback', {
           description: 'English normalization failed, so the original sanitized summary was kept.',

@@ -14,7 +14,8 @@ compilazione: non si può disattivare dall'app né modificando file.
 | Trascrizione | Avviene sul PC (Parakeet o Whisper). L'audio non viene mai inviato fuori. |
 | Riassunti | Solo Built-in AI (sul PC) o un server LLM su `localhost`. OpenAI, Claude, Groq, OpenRouter e gli endpoint remoti sono nascosti e bloccati anche dal backend. |
 | Analytics (PostHog) | Disattivati in modo permanente. |
-| Aggiornamenti automatici | Disattivati: l'app non contatta GitHub e non scarica installer. |
+| Aggiornamenti | Rimossi del tutto: niente pulsante "Check for Updates" e nessun contatto con server esterni. |
+| Link e pagine web | Nessuno: l'app non contiene link né può aprire il browser. |
 | Dati salvati | Solo nella cartella `data\` accanto all'exe, nient'altro nel profilo utente. |
 
 L'unico traffico di rete possibile è il download di un modello aggiuntivo, se lo
@@ -110,6 +111,36 @@ Note:
 - Per disattivarlo vai in **Settings**, poi **General**, e spegni
   **Rilevamento automatico delle call**.
 
+## Funzioni principali
+
+### Chi ha detto cosa
+
+Ogni frase della trascrizione ha un'etichetta:
+
+- **Tu**: la tua voce, presa dal microfono;
+- **Partecipante 1, 2, 3…**: le voci della call. Un piccolo modello vocale locale
+  (`data\models\speaker\`) le riconosce e le separa.
+
+Il riconoscimento è affidabile con le cuffie. Con gli altoparlanti la tua voce e quella
+degli altri si mescolano di più: è possibile qualche errore. Se due etichette sono la
+stessa persona, o vuoi mettere i nomi veri, apri la riunione e clicca su
+**Partecipanti**: rinomina "Partecipante 1" in "Marco". Dando lo stesso nome a due
+partecipanti, vengono uniti.
+
+### Export in PDF, Word e Markdown
+
+Nella riunione, il pulsante **Esporta** crea un documento con titolo, data,
+partecipanti, riassunto e trascrizione completa (con chi ha parlato e l'orario). Il
+documento viene generato sul PC.
+
+### Cartella delle trascrizioni
+
+In **Settings**, poi **General**, poi **Cartella delle trascrizioni**, scegli dove
+salvare ogni riunione e in quali formati (predefinito: Word, nella cartella
+`data\trascrizioni\` accanto all'app). Puoi scegliere qualsiasi cartella, ad esempio
+una cartella di OneDrive aziendale. Il file viene creato a fine registrazione e
+aggiornato quando il riassunto è pronto o quando rinomini i partecipanti.
+
 ## Cosa c'è nella cartella
 
 | File | A cosa serve |
@@ -119,7 +150,8 @@ Note:
 | `ffmpeg.exe` | Conversione e unione dell'audio |
 | `onnxruntime.dll` | Motore di trascrizione Parakeet |
 | `templates\` | Modelli di riassunto inclusi |
-| `data\models\` | Modelli inclusi: Parakeet v3 (trascrizione) e Qwen 3.5 2B (riassunti) |
+| `data\models\` | Modelli inclusi: Parakeet v3 (trascrizione), Qwen 3.5 2B (riassunti), CAM++ (voci) |
+| `LICENSES.txt` e testi delle licenze | Note di licenza dei componenti open source (obbligatorie) |
 | `portable.txt` | Attiva la modalità portable |
 | `SHA256SUMS.txt` | Impronte dei file per la verifica |
 
@@ -131,6 +163,7 @@ Con `portable.txt` accanto all'exe, tutto finisce in `data\`:
 | --- | --- |
 | `data\meeting_minutes.sqlite` | Riunioni, trascrizioni e riassunti |
 | `data\recordings\` | Registrazioni audio |
+| `trascrizioni\` (dentro `data\`) | File Word/PDF/Markdown delle riunioni (cartella predefinita) |
 | `data\models\` | Modelli |
 | `data\*.json`, `data\config\` | Impostazioni |
 | `data\EBWebView\` | Dati dell'interfaccia |

@@ -137,6 +137,8 @@ pub struct MeetingTranscript {
     pub audio_end_time: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub speaker: Option<String>,
 }
 
 /// Meeting metadata without transcripts (for pagination)
@@ -188,6 +190,8 @@ pub struct TranscriptSegment {
     pub audio_end_time: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub speaker: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -878,6 +882,7 @@ pub async fn api_get_meeting_transcripts<R: Runtime>(
                     audio_start_time: t.audio_start_time,
                     audio_end_time: t.audio_end_time,
                     duration: t.duration,
+                    speaker: t.speaker,
                 })
                 .collect::<Vec<_>>();
 
@@ -924,6 +929,23 @@ pub async fn api_save_meeting_title<R: Runtime>(
             Err(format!("Failed to update meeting: {}", e))
         }
     }
+}
+
+#[tauri::command]
+pub async fn api_rename_speaker(
+    state: tauri::State<'_, AppState>,
+    meeting_id: String,
+    old_name: String,
+    new_name: String,
+) -> Result<u64, String> {
+    let new_name = new_name.trim();
+    if new_name.is_empty() {
+        return Err("Il nome non può essere vuoto".to_string());
+    }
+    let new_name: String = new_name.chars().take(60).collect();
+    MeetingsRepository::rename_speaker(state.db_manager.pool(), &meeting_id, &old_name, &new_name)
+        .await
+        .map_err(|e| format!("Failed to rename speaker: {}", e))
 }
 
 #[tauri::command]
@@ -1142,25 +1164,6 @@ pub async fn debug_backend_connection<R: Runtime>(app: AppHandle<R>) -> Result<S
             log_error!("✗ Backend connection failed: {}", e);
             Err(format!("Backend connection failed: {}", e))
         }
-    }
-}
-
-#[tauri::command]
-pub async fn open_external_url(url: String) -> Result<(), String> {
-    use std::process::Command;
-
-    let result = if cfg!(target_os = "windows") {
-        Command::new("cmd").args(&["/C", "start", &url]).output()
-    } else if cfg!(target_os = "macos") {
-        Command::new("open").arg(&url).output()
-    } else {
-        // Linux and other Unix-like systems
-        Command::new("xdg-open").arg(&url).output()
-    };
-
-    match result {
-        Ok(_) => Ok(()),
-        Err(e) => Err(format!("Failed to open URL: {}", e)),
     }
 }
 
